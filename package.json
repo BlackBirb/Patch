@@ -1,0 +1,20 @@
+{
+  "name": "patch-discord",
+  "version": "3.0.0",
+  "description": "Another version of my discord bot.",
+  "main": "index.js",
+  "author": "BlackBird",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon --exec node -- ./index.js"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.1",
+    "nodemon": "^1.15.1"
+  },
+  "dependencies": {
+    "discord.js": "^11.3.0",
+    "ffmpeg-binaries": "^3.2.2-3",
+    "node-opus": "^0.2.7"
+  }
+}
