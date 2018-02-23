@@ -2,7 +2,8 @@ module.exports = Discord =>
 Object.defineProperties(Discord.Message.prototype, {
     "params": {
         value: null,
-        writable: true
+        writable: true,
+        configurable: true
     },
     "name": {
         value: null,

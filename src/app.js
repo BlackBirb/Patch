@@ -29,7 +29,7 @@ module.exports = class Bot extends Discord.Client {
         const getPath = this.utils.pathGetter(__dirname, "./Client/events")
         const events = fs.readdirSync(getPath())
         for(const evn of events) {
-            const cb = require(getPath(evn))
+            const cb = require(getPath(evn)).bind(this)
             const name = evn.slice(0,-3)
             this.events.set(name, cb)
             this.on(name, cb)

@@ -9,11 +9,18 @@ module.exports = class Help extends Command {
         this.channels = ["text", "dm"]
 
         this.types = {
-            "command": {
-                required: false,
-                err: "What command do you need help with?"
+            hi: {
+                "name": {
+                    required: true
+                }
             },
-            "k": {} // hmm... need better way to do this
+            run: {
+                "command": {
+                    required: false,
+                    err: "What command do you need help with?"
+                },
+                "k": {} // hmm... need better way to do this
+            }
         }
     }
 

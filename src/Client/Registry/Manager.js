@@ -17,7 +17,7 @@ module.exports = class Registry {
         this.addGroup("global",files)
         for(const folder of folders) {
             const newPath = path.resolve(__dirname, "../../Commands", folder)
-            const cmdFiles = fs.readdirSync(newPath)
+            const cmdFiles = fs.readdirSync(newPath).map(e => path.join(folder,e))
             this.addGroup(folder,cmdFiles)
         }
     }
