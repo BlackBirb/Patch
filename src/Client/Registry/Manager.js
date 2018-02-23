@@ -53,6 +53,6 @@ module.exports = class Registry {
 
     find(name) {
         const id = this.aliases.get(name)
-        return this.commands.get(id)
+        return id && this.commands.get(id)
     }
 }

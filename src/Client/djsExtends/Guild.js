@@ -8,6 +8,9 @@ Object.defineProperties(Discord.Guild.prototype, {
         value: undefined,
         writable: true
     },
+    "tags": {
+        value: []
+    },
     "prefix": {
         get: function() {
             if(typeof this._prefix !== "string") {

@@ -16,3 +16,4 @@ yarn-error.log*
 todo.md*
 config.json*
 yarn.lock*
+run*

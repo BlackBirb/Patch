@@ -7,13 +7,21 @@ module.exports = class Help extends Command {
         this.aliases = ["halp"],
         this.premissions = 0b1 // define them later
         this.channels = ["text", "dm"]
+
+        this.types = {
+            "command": {
+                required: false,
+                err: "What command do you need help with?"
+            },
+            "k": {} // hmm... need better way to do this
+        }
     }
 
     subhi(msg) {
         msg.reply("Hello!")
     }
 
-    async run(msg) {
-        msg.reply("Yep. I don't know what to do anymore, gib me sec")
+    async run(msg, params) {
+        msg.reply(`Yep. I don't know what to do anymore.\nParams:\n ${params.string}`)
     }
 }
