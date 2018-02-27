@@ -83,6 +83,7 @@ module.exports = class Help extends Command {
      * @param {String} cmdName Name of the command, idk why
      */
     async run(msg, params, cmdName) {
+        this.test()
         console.log(this.data)
         msg.reply(`Yep. Command ${this.name} works\n${this.data.guildData}`);
 

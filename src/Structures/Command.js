@@ -58,6 +58,8 @@ module.exports = class Command {
             voice: msg.guild.voice
         })
 
+        cmdScope.__proto__ = this.__proto__ // very bad idea, but whatever
+
         return this[runAt].call(cmdScope, msg, params, msg.name)
     }
 }

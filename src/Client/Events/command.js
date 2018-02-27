@@ -16,6 +16,11 @@ module.exports = function(msg) {
         }
     }
 
+    if(cmd.channels) {
+        if(!cmd.channels.includes(msg.channel.type)) 
+            return msg.reply("You can't use this command on this channel, sorry :c")
+    }
+
     cmd.process(msg, runAt)
     // check permissions
 }
