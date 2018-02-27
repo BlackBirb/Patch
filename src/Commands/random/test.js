@@ -19,6 +19,10 @@ module.exports = class Help extends Command {
         // on what channel types command should work
         this.channels = ["text", "dm"]
 
+        // this command won't be initialized, nothing will see it.
+        // @optional
+        this.disabled = false
+
         /**
          * You can define types for you command, you can later access them in run with params.nameYouSpecified
          * 
@@ -46,20 +50,22 @@ module.exports = class Help extends Command {
             run: {
                 "number": {
                     required: true,
-                    err: "What command do you need help with?"
+                    err: "Ripp"
                 },
                 "k": {}
             }
         }
 
         /**
-         * Each guild will have it's own version of this.data, you can acces it in any command function just like it would be in this object, so `this.data`
+         * Function that returns object!
+         * 
+         * Each guild will have it's own version of object returned by this.data, you can acces it in any command function just like it would be in this object, so `this.data`
          * 
          * @optional
          */
-        this.data = {
+        this.data = () => ({
             "guildData": 0
-        }
+        })
     }
 
     /**

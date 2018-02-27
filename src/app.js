@@ -10,6 +10,7 @@ module.exports = class Bot extends Discord.Client {
         this.config = config
         this.utils = utils
         this.constants = constants
+        this.logger = require("./Client/Utils/Logger.js");
 
         this.registry = new CommandRegistry(this)
 
@@ -25,8 +26,9 @@ module.exports = class Bot extends Discord.Client {
     }
 
     loadEvents() {
+        this.logger.loading("Loading events...")
         this.events = new Discord.Collection()
-        const getPath = this.utils.pathGetter(__dirname, "./Client/events")
+        const getPath = this.utils.pathGetter(__dirname, "./Client/Events")
         const events = fs.readdirSync(getPath())
         for(const evn of events) {
             const cb = require(getPath(evn)).bind(this)
@@ -34,5 +36,6 @@ module.exports = class Bot extends Discord.Client {
             this.events.set(name, cb)
             this.on(name, cb)
         }
+        this.logger.ok(`${this.events.size} events loaded.`)
     }
 }

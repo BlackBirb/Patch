@@ -1,5 +1,6 @@
 const Discord = require("discord.js")
 const { pathGetter } = require("./Utils/main.js")
+const logger = require("./Utils/Logger.js")
 
 const extend = [
     "Message",
@@ -10,4 +11,5 @@ for(const name of extend) {
     require(path(name)+".js")(Discord)
 }
 
+logger.ok("Discord module extended with:", extend.join(", "))
 module.exports = Discord

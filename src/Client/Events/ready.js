@@ -1,8 +1,8 @@
 module.exports = function(evn) {
     if(typeof evn === "string") {
-        return console.log("Fake test loaded!")
+        return this.logger.loaded("Fake test loaded!")
     }
-    else console.log(`[${new Date().toLocaleString()}]`,"Logged to discord!")
+    else this.logger.loaded("Logged to discord!")
     
     this.user.setActivity("Meow?")
 }

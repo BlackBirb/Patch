@@ -6,10 +6,12 @@ module.exports = class Registry {
     constructor(client) {
         this.client = client
 
+        this.groups = []
         this.aliases = new Discord.Collection()
         this.commands = new Discord.Collection()
     }
     fetch() {
+        this.client.logger.loading("Fetching commands...")
         const folder = path.resolve(__dirname, "../../Commands")
         const dir = fs.readdirSync(folder)
         const folders = dir.filter(f => fs.statSync(path.join(folder, f)).isDirectory())
@@ -20,9 +22,11 @@ module.exports = class Registry {
             const cmdFiles = fs.readdirSync(newPath).map(e => path.join(folder,e))
             this.addGroup(folder,cmdFiles)
         }
+        this.client.logger.ok(`${this.commands.size} commands loaded in ${this.groups.length} groups.`)
     }
 
     addGroup(name, files) {
+        this.groups.push(name)
         for(const command of files) {
             const CommandClass = require("../../Commands/"+command)
             this.register(CommandClass, name)
@@ -43,6 +47,7 @@ module.exports = class Registry {
         const { name } = Command
         if(this.aliases.has(name)) throw new ReferenceError(`Command ${name} already exists!`)
         const cmd = new Command(this.client, this.createKey())
+        if(cmd.disabled) return;
         cmd.group = group
         this.aliases.set(cmd.name, cmd.id)
         if(cmd.aliases)
