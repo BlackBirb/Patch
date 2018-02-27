@@ -10,8 +10,8 @@ module.exports = class Command {
     }
 
     guildOptions(guild) {
-        let data = guild.commandData[this.name]
-        if(!guild.commandData[this.name])
+        let data = guild.commandData[this.id]
+        if(!data)
             data = guild.createCmdData(this)
         return data
     }
@@ -53,8 +53,11 @@ module.exports = class Command {
             params = new Parameters(formated)
         }
 
-        const cmdScope = this.guildOptions(msg.guild)
+        const cmdScope = Object.assign({}, this, {
+            data: this.guildOptions(msg.guild),
+            voice: msg.guild.voice
+        })
 
-        return this[runAt].bind(cmdScope)(msg, params, msg.name)
+        return this[runAt].call(cmdScope, msg, params, msg.name)
     }
 }

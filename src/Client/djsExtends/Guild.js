@@ -31,8 +31,9 @@ Object.defineProperties(Discord.Guild.prototype, {
     },
     "createCmdData": { // i want it to be mutable
         value: function(command) {
+            console.log("createNewData")
             if(command.data)
-                return this.commandData[command.name] = Object.assign({}, command.data)
+                return this.commandData[command.id] = Object.assign({}, command.data)
             return {}
         }
     }

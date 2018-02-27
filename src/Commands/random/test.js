@@ -14,11 +14,10 @@ module.exports = class Help extends Command {
     }
 
     async run(msg) {
-        console.log(this)
-        console.log(msg.guild.commandData)
-        msg.reply(`Yep. Command ${this.name} works\n${this.guildData}`);
+        console.log(this.data)
+        msg.reply(`Yep. Command ${this.name} works\n${this.data.guildData}`);
 
-        this.guildData += 1
+        this.data.guildData += 1
         
     }
 }
