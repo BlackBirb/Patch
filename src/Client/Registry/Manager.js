@@ -30,6 +30,7 @@ module.exports = class Registry {
     }
 
     createKey() { 
+        // if(this.commands.size > 99999999999999999999999999999999) throw new Error("Too many commands! No id avaible! xD")
         let key = "1c"
         for(let i=0;i<32;i++) {
             key += Math.floor(Math.random()*10)
