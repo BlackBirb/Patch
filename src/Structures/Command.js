@@ -3,9 +3,17 @@ const Parameters = require("./Parameters.js")
 module.exports = class Command {
     constructor(client, id) {
         this.client = client
+        this.name = null
         this.id = id
         this.types = false
         this.group = "unassigned"
+    }
+
+    guildOptions(guild) {
+        let data = guild.commandData[this.name]
+        if(!guild.commandData[this.name])
+            data = guild.createCmdData(this)
+        return data
     }
 
     async process(msg, runAt = "run") {
@@ -44,7 +52,9 @@ module.exports = class Command {
             }
             params = new Parameters(formated)
         }
-        
-        return this[runAt](msg, params, msg.name)
+
+        const cmdScope = this.guildOptions(msg.guild)
+
+        return this[runAt].bind(cmdScope)(msg, params, msg.name)
     }
 }

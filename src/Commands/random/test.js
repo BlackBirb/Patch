@@ -7,9 +7,18 @@ module.exports = class Help extends Command {
         this.aliases = ["testing"],
         this.premissions = 0b1 // define them later
         this.channels = ["text", "dm"]
+
+        this.data = {
+            "guildData": 0
+        }
     }
 
     async run(msg) {
-        msg.reply(`Yep. I work`);
+        console.log(this)
+        console.log(msg.guild.commandData)
+        msg.reply(`Yep. Command ${this.name} works\n${this.guildData}`);
+
+        this.guildData += 1
+        
     }
 }
