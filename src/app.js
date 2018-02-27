@@ -17,20 +17,19 @@ module.exports = class Bot extends Discord.Client {
         this.loadEvents()
         this.registry.fetch()
 
-        if(!config.testing) {
+        if (!config.testing) {
             this.login(config.token)
-        }
-        else
+        } else
             this.emit("ready", "Fake ready event.")
     }
 
     loadEvents() {
         this.events = new Discord.Collection()
-        const getPath = this.utils.pathGetter(__dirname, "./Client/events")
+        const getPath = this.utils.pathGetter(__dirname, "./Client/Events")
         const events = fs.readdirSync(getPath())
-        for(const evn of events) {
+        for (const evn of events) {
             const cb = require(getPath(evn)).bind(this)
-            const name = evn.slice(0,-3)
+            const name = evn.slice(0, -3)
             this.events.set(name, cb)
             this.on(name, cb)
         }
