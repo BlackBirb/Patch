@@ -43,6 +43,11 @@ class Logger {
         console.log(msg + end)
     }
 
+    error(...text) {
+        const str = text.join(" ")
+        this.undefined(str, { color: "red", text: "Error" })
+    }
+
     loading(...text) {
         const str = text.join(" ")
         this.undefined(str, { color: "yellow", text: "Loading"})
@@ -56,6 +61,11 @@ class Logger {
     ok(...text) {
         const str = text.join(" ")
         this.undefined(str, { color: "green", text: "OK"})
+    }
+
+    info(...text) {
+        const str = text.join(" ")
+        this.undefined(str, { color: "grey", text: "INFO"})
     }
 }
 

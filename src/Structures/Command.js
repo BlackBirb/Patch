@@ -43,7 +43,6 @@ module.exports = class Command {
                 }
                 else 
                     formated.push({name, value: msg.params[i]})
-                // i really don't like checking if params are null so many times, need fix
             }
             if(msg.params && formated.length < msg.params.length) {
                 for(let i=formated.length-1;i<msg.params.length;i++) {
