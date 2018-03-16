@@ -4,6 +4,7 @@ module.exports = function(msg) {
     const cmd = this.registry.find(msg.name)
 
     if(!cmd) return msg.react(failCommand)
+    this.db.logCommand(cmd, msg)
 
     // check for subcommand
     let runAt = "run"

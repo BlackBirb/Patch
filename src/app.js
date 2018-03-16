@@ -11,9 +11,10 @@ module.exports = class Bot extends Discord.Client {
         this.config = config
         this.utils = utils
         this.constants = constants
+        this.logger = require("./Client/Utils/Logger.js");
 
         this.waitForServices()
-        this.logger = require("./Client/Utils/Logger.js");
+        this.db = null
         dbManager(this).then(db => {
             this.db = db 
             this.emit("readyMongoDB")
@@ -36,7 +37,7 @@ module.exports = class Bot extends Discord.Client {
     waitForServices() {
         const { asyncServices } = constants
         const ready = []
-
+        console.loading("Waiting for services:",asyncServices.join(", "))
         const check = () => {
             if(ready.length >= asyncServices.length) 
                 return this.emit("initialized")
@@ -44,6 +45,7 @@ module.exports = class Bot extends Discord.Client {
 
         for(const service of asyncServices) {
             this.once("ready"+service, () => { 
+                console.loaded("Service",service,"is ready!")
                 ready.push(service) 
                 check()
             })
@@ -51,12 +53,12 @@ module.exports = class Bot extends Discord.Client {
     }
 
     start() {
-        this.logger.ok("All services ready, starting.")
+        console.ok("All services ready, starting.")
         this.loadEvents()
     }
 
     loadEvents() {
-        this.logger.loading("Loading events...")
+        console.loading("Loading events...")
         this.events = new Discord.Collection()
         const getPath = this.utils.pathGetter(__dirname, "./Client/Events")
         const events = fs.readdirSync(getPath())
@@ -66,6 +68,7 @@ module.exports = class Bot extends Discord.Client {
             this.events.set(name, cb)
             this.on(name, cb)
         }
-        this.logger.ok(`${this.events.size} events loaded.`)
+        console.ok(`${this.events.size} events loaded.`)
+        this.emit("ready") // im stupid
     }
 }

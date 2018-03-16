@@ -6,5 +6,13 @@ module.exports = {
     },
     LOGGER_SPACING: 75,
     mongoUrl: "mongodb://localhost:27017/",
-    asyncServices: ["Commands","MongoDB", "DiscordJS"] // API in future
+    asyncServices: ["Commands","MongoDB", "DiscordJS"], // API in future
+    statusChangeDelay: 300000 // 5 min
+}
+
+module.exports.defaults = {
+    guildSettings: {
+        prefix: "!",
+        tags: [{name: "dicc", value: "Yes i like"}]
+    }
 }

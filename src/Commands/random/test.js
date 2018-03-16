@@ -1,7 +1,7 @@
 /* eslint-disable */
 const Command = require("../../Structures/Command.js")
 
-module.exports = class Help extends Command {
+module.exports = class Test extends Command {
     constructor(client, id) {
         // YOU MUST pass 2 props from constructor to super
         super(client, id)

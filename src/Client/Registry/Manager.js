@@ -11,7 +11,7 @@ module.exports = class Registry {
         this.commands = new Discord.Collection()
     }
     async fetch() {
-        this.client.logger.loading("Fetching commands...")
+        console.loading("Fetching commands...")
         const folder = path.resolve(__dirname, "../../Commands")
         const dir = fs.readdirSync(folder)
         const folders = dir.filter(f => fs.statSync(path.join(folder, f)).isDirectory())
@@ -22,7 +22,7 @@ module.exports = class Registry {
             const cmdFiles = fs.readdirSync(newPath).map(e => path.join(folder,e))
             this.addGroup(folder,cmdFiles)
         }
-        this.client.logger.ok(`${this.commands.size} commands loaded in ${this.groups.length} groups.`)
+        console.ok(`${this.commands.size} commands loaded in ${this.groups.length} groups.`)
         return true
     }
 

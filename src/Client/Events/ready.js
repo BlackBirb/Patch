@@ -1,8 +1,14 @@
+const getStatus = require("../Utils/playingStatus.js")
 module.exports = function(evn) {
     if(typeof evn === "string") {
-        return this.logger.loaded("Fake test loaded!")
+        return console.loaded("Fake test loaded!")
     }
-    else this.logger.loaded("Logged to discord!")
+    else console.loaded("Logged to discord!")
     
-    this.user.setActivity("Meow?")
+    console.loading("Getting guilds settings...")
+    this.guilds.forEach(g => g.loadSettings())
+    console.ok("Guilds settings loaded")
+
+    this.user.setActivity(...getStatus(this))
+    setInterval(() => this.user.setActivity(...getStatus(this)), this.constants.statusChangeDelay)
 }
