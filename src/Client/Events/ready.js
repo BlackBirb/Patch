@@ -3,7 +3,6 @@ module.exports = function(evn) {
     if(typeof evn === "string") {
         return console.loaded("Fake test loaded!")
     }
-    else console.loaded("Logged to discord!")
     
     console.loading("Getting guilds settings...")
     this.guilds.forEach(g => g.loadSettings())
@@ -11,4 +10,5 @@ module.exports = function(evn) {
 
     this.user.setActivity(...getStatus(this))
     setInterval(() => this.user.setActivity(...getStatus(this)), this.constants.statusChangeDelay)
+    console.log("All systems ready?")
 }

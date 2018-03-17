@@ -16,18 +16,20 @@ Object.defineProperties(Discord.Guild.prototype, {
      */
     "updateSettings": {
         value: function(settings) {
-            this.client.emit("setting", this, {
-                type: "update",
-                payload: settings
-            })
+            for(const key of Object.keys(settings.payload)) {
+                this.settings[key] = settings.payload[key]
+            }
+            return this.client.db.updateSettings(this.id, settings.payload)
         } 
     },
     /**
      * Restores default settings
      */
     "clearSettings": {
-        value: function() {
-            this.client.emit("setting", this, { type: "default" })
+        value: async function() {
+            this.settings = Object.assign({}, this.constants.defaults.guildSettings)
+            await this.client.db.removeSettinngs(this.id)
+            return this.clinet.db.createSettings(this.id)
         }
     },
     /**
@@ -43,6 +45,13 @@ Object.defineProperties(Discord.Guild.prototype, {
             }
             return this.settings = Object.assign({}, this.client.constants.defaults.guildSettings, settings) // in case there's new setting that this guild doesn't have
             // and it's ok if it won't be saved with new ones, that would be even better... :thonk:
+        }
+    },
+    "tag": {
+        value: function(name, msg) {
+            let tag = this.settings.tags.hasOwnProperty(name) ? this.settings.tags[name] : null;
+            if(tag === null) return tag
+            return this.client.utils.transformTag(tag, msg)
         }
     },
     "tags": {

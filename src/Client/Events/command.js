@@ -3,7 +3,13 @@ const { failCommand } = require("../Utils/Constants.js")
 module.exports = function(msg) {
     const cmd = this.registry.find(msg.name)
 
-    if(!cmd) return msg.react(failCommand)
+    if(!cmd) {
+        const tag = msg.guild.tag(msg.name, msg)
+        if(tag !== null) {
+            return msg.channel.send(tag)
+        }
+        return msg.react(failCommand)
+    }
     this.db.logCommand(cmd, msg)
 
     // check for subcommand

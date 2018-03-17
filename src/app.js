@@ -3,7 +3,7 @@ const fs = require("fs")
 const utils = require("./Client/Utils/Main.js")
 const constants = require("./Client/Utils/Constants.js")
 const CommandRegistry = require("./Client/Registry/Manager.js")
-const dbManager = require("./Client/db/Manager.js")
+const dbManager = require("./Client/db/MongoManager.js")
 
 module.exports = class Bot extends Discord.Client {
     constructor(config) {
