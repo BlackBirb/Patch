@@ -3,6 +3,6 @@ module.exports = function(msg) {
     if(msg.channel.type === "text" && !msg.channel.permissionsFor(this.user).has("SEND_MESSAGES")) return
 
     const cmd = msg.prepareCommand()
-    if(!msg.isCommand) return;
+    if(msg.type !== "COMMAND") return;
     this.emit("command", cmd)
 }

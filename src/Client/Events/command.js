@@ -1,10 +1,10 @@
 const { failCommand } = require("../Utils/Constants.js")
 
 module.exports = function(msg) {
-    const cmd = this.registry.find(msg.name)
+    const cmd = this.registry.find(msg.command)
 
     if(!cmd) {
-        const tag = msg.guild.tag(msg.name, msg)
+        const tag = msg.guild.tag(msg.command, msg)
         if(tag !== null) {
             return msg.channel.send(tag)
         }

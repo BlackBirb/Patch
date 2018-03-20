@@ -5,14 +5,6 @@ Object.defineProperties(Discord.Message.prototype, {
         writable: true,
         configurable: true
     },
-    "name": {
-        value: null,
-        writable: true
-    },
-    "isCommand": {
-        value: false,
-        writable: true
-    },
     "prepareCommand": {
         value: function() {
             const reg = {
@@ -37,8 +29,8 @@ Object.defineProperties(Discord.Message.prototype, {
                 params = isCmd[2].split(" ")
             }
 
-            this.isCommand = isCmd !== null
-            this.name = name
+            this.type = "COMMAND"
+            this.command = name
             this.params = params
             return this
         }
