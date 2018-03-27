@@ -5,7 +5,7 @@ module.exports = class Help extends Command {
         super(client, id)
         this.name = "help"
         this.aliases = ["halp"]
-        this.premissions = 0b1 // define them later
+        this.permissions = 0x10 // define them later
         this.channels = ["text", "dm"]
 
         this.types = {

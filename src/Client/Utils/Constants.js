@@ -9,8 +9,10 @@ module.exports = {
     webURL: "https://soon.lol/"
 }
 
-module.exports.permissions = {
-    "FULL_ADMIN": 0b1 //??
+module.exports.PERMISSIONS = { // ???
+    "DEFAULT": 0x1,
+    "EVAL": 1 << 29,
+    "FULL_ADMIN": 1 << 30
 },
 
 module.exports.defaults = {
@@ -19,6 +21,10 @@ module.exports.defaults = {
         tags: {
             dicc: "Yes i like",
             try: "Author: $author#\nNo mention: $authornick#\nchannel: $channel#\nparams: $params#\nparam2: $param2#"
-        }
+        },
+        defaultPermissions: 0x1
+    },
+    userSettings: {
+        permissions: 0x1
     }
 }

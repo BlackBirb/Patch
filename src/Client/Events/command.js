@@ -1,12 +1,17 @@
 const { failCommand } = require("../Utils/Constants.js")
 
-module.exports = function(msg) {
+const messages = {
+    noPerm: ["Sorry but I'm not going to listen to you."]
+}
+
+module.exports = async function(msg) {
     const cmd = this.registry.find(msg.command)
 
     if(!cmd) {
-        const tag = msg.guild.tag(msg.command, msg)
-        if(tag !== null) {
-            return msg.channel.send(tag)
+        if(msg.channel.type === "text") {
+            const tag = msg.guild.tag(msg.command, msg)
+            if(tag !== null)
+                return msg.channel.send(tag)
         }
         return msg.react(failCommand)
     }
@@ -27,7 +32,29 @@ module.exports = function(msg) {
         if(!cmd.channels.includes(msg.channel.type)) 
             return msg.reply("You can't use this command on this channel, sorry :c")
     }
+    if(cmd.requiredPermissions && msg.channel.type === "text") {
+        const perms = msg.channel.permissions
+        if(Array.isArray(cmd.requiredPermissions)) {
+            for(const permission of cmd.requiredPermissions) {
+                if(!perms.has(permission)) return msg.reply(`How am I supposed to do that if you don't allow me to \`${permission}\`? Give me that channel permission!`)
+            }
+        } else if(typeof cmd.requiredPermissions === "string") {
+            if(!perms.has(cmd.requiredPermissions)) return msg.reply(`How am I supposed to do that if you don't allow me to \`${cmd.requiredPermissions}\`? Give me that channel permission!`)
+        } else throw new TypeError("Channel required permissions must be string or array!\nCommand "+cmd.name)
+    }
+
+    // check permissions +
+    if(cmd.hasOwnProperty("permissions")) {
+        let user = await msg.author.permissions
+        if(!user) {
+            if(msg.channel.type !== "text")
+                return msg.reply("Sorry but you don't have permission for that.")
+            user = msg.guild.settings.defaultPermissions
+        } else if(user !== this.constants.PERMISSIONS.FULL_ADMIN) {
+            if((user & cmd.permissions) !== cmd.permissions) 
+                return msg.reply(this.utils.pickRandom(messages.noPerm))
+        }
+    }
 
     cmd.process(msg, runAt)
-    // check permissions
 }

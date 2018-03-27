@@ -6,9 +6,10 @@ module.exports = class Registry {
     constructor(client) {
         this.client = client
 
-        this.groups = []
+        this.groups = new Set()
         this.aliases = new Discord.Collection()
         this.commands = new Discord.Collection()
+        this.registeredPaths = new Map()
     }
     async fetch() {
         console.loading("Fetching commands...")
@@ -22,15 +23,16 @@ module.exports = class Registry {
             const cmdFiles = fs.readdirSync(newPath).map(e => path.join(folder,e))
             this.addGroup(folder,cmdFiles)
         }
-        console.ok(`${this.commands.size} commands loaded in ${this.groups.length} groups.`)
+        console.ok(`${this.commands.size} commands loaded in ${this.groups.size} groups.`)
         return true
     }
 
     addGroup(name, files) {
-        this.groups.push(name)
+        this.groups.add(name)
         for(const command of files) {
-            const CommandClass = require("../../Commands/"+command)
-            this.register(CommandClass, name)
+            const path = "../../Commands/"+command
+            const CommandClass = require(path)
+            this.register(CommandClass, name, path)
         }
     }
 
@@ -44,7 +46,7 @@ module.exports = class Registry {
         return key
     }
 
-    register(Command, group) {
+    register(Command, group, path) {
         const { name } = Command
         if(this.aliases.has(name)) throw new ReferenceError(`Command ${name} already exists!`)
         const cmd = new Command(this.client, this.createKey())
@@ -56,10 +58,35 @@ module.exports = class Registry {
                 this.aliases.set(alias, cmd.id)
             }
         this.commands.set(cmd.id, cmd)
+        this.registeredPaths.set(cmd.id, path)
     }
 
     find(name) {
         const id = this.aliases.get(name)
         return id && this.commands.get(id)
+    }
+
+    reload(cmd = null) {
+        if(!cmd) {
+            this.registeredPaths.forEach(p => delete require.cache[require.resolve(p)])
+            this.commands.forEach((v, k) => this.commands.delete(k))
+            this.aliases.forEach((v, k) => this.aliases.delete(k))
+            return this.fetch().then(() => Promise.resolve(console.ok("Commands reloaded!") || true))
+        } else if(typeof cmd === "string") {
+            const command = this.find(cmd)
+            if(!command) return false;
+
+            const path = this.registeredPaths.get(command.id)
+
+            this.commands.delete(command.id) // delete object from registry cache
+            if(command.aliases) 
+                for(const alias of command.aliases) // delete aliases
+                    this.aliases.delete(alias)
+
+            delete require.cache[require.resolve(path)] // delete from requrie cachce
+
+            this.register(require(path), command.group, path)
+            return Promise.resolve(console.ok(`Command ${command.name} reloaded!`) || true)
+        }
     }
 }

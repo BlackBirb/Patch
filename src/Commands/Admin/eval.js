@@ -7,7 +7,7 @@ module.exports = class Eval extends Command {
         
         this.name = "eval"
         this.aliases = ["do"]
-        this.premissions = 0b1
+        this.permissions = this.client.constants.PERMISSIONS.EVAL
         
         this.channels = ["text", "dm"]
 
@@ -59,6 +59,8 @@ module.exports = class Eval extends Command {
     }
     
     async run(msg, params) {
+        // eslint-disable-next-line no-unused-vars
+        const { client, client: { constants } } = this // for eval scope
         const start = Date.now()
         let parsed = null;
         if(params[0] === "nores") {

@@ -24,7 +24,7 @@ module.exports = class Bot extends Discord.Client {
 
         this.registry.fetch().then(() => this.emit("readyCommands")) // maybe tey will take some tile to load? I doubt it but still.
 
-        if (!config.testing) {
+        if (config.run.discord) {
             this.login(config.token)
         } else
             this.emit("ready", "Fake ready event.")
@@ -55,6 +55,7 @@ module.exports = class Bot extends Discord.Client {
     start() {
         console.ok("All services ready, starting.")
         this.loadEvents()
+        this.openCLI()
     }
 
     loadEvents() {
@@ -70,5 +71,10 @@ module.exports = class Bot extends Discord.Client {
         }
         console.ok(`${this.events.size} events loaded.`)
         this.emit("ready") // im stupid
+    }
+
+    openCLI() {
+        const cli = require("./cli.js")
+        cli.open(cli.createScope(this))
     }
 }

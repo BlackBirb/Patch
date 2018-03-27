@@ -13,11 +13,18 @@ module.exports = class Test extends Command {
         // @optional
         this.aliases = ["testing"]
         
-        // define them later
-        this.premissions = 0b1
+        // Permissions can be found at /src/Client/Utils/Constants
+        // Never write them as numbers, they might change
+        // DEFAULT permissions mean that if admin changes default permissions for user they won't work
+        // @optional
+        this.permissions = this.client.constants.PERMISSIONS.DEFAULT
         
         // on what channel types command should work
         this.channels = ["text", "dm"]
+
+        // array or string of permissions that bot must have to even run command, bot always checks for
+        // "VIEV_CHANNEL" "SEND_MESSAGES" by default
+        this.requiredPermissions = "ADD_REACTIONS"
 
         // this command won't be initialized, nothing will see it.
         // @optional
@@ -50,7 +57,7 @@ module.exports = class Test extends Command {
             run: {
                 "number": {
                     required: true,
-                    err: "Ripp"
+                    err: "Need some number!"
                 },
                 "k": {}
             }
@@ -77,16 +84,22 @@ module.exports = class Test extends Command {
     }
 
     /**
+     * You can have any function in command you want, and it won't be subcommand as long as it donesn't starts with sub
+     */
+    test() {
+        return true
+    }
+
+    /**
      * This function will be called when user uses this command, if subcommand wasn't triggered.
      * @param {Object} msg Discord.js message expanded by bot functions.
      * @param {Parameters} params Array-object like thing, you can get to parameters with index (all parameters that user passed are indexed) or with name if specified in this.types, only specified params can be accesed this way
      * @param {String} cmdName Name of the command, idk why
      */
     async run(msg, params, cmdName) {
-        this.test()
         console.log(this.data)
-        msg.reply(`Yep. Command ${this.name} works\n${this.data.guildData}`);
-
+        //msg.reply(`Yep. Command ${this.name} works\n${this.data.guildData},  ${this.test()}`);
+        msg.reply("aaaa")
         this.data.guildData += 1
         
     }

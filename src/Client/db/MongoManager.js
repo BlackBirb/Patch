@@ -27,6 +27,10 @@ class MongoManager {
             "guildSettings": {
                 db: "settings",
                 collection: "guild"
+            },
+            "userSettings": {
+                db: "settings",
+                collection: "user"
             }
         }
     }
@@ -38,31 +42,45 @@ class MongoManager {
     }
 
     async logCommand(cmd, msg) {
-        return this.collection("cmdLogs").insertOne({
-            command: cmd.name,
-            user: {
-                id: msg.author.id,
-                username: msg.author.username,
-                discriminator: msg.author.discriminator
-            },
-            guild: {
-                id: msg.guild.id,
-                name: msg.guild.name
-            },
-            channel: {
-                id: msg.channel.id,
-                name: msg.channel.name
-            },
-            params: msg.params,
-            timestamp: msg.createdTimestamp
-        })
+        if(msg.channel.type === "text") {
+            return this.collection("cmdLogs").insertOne({
+                command: cmd.name,
+                user: {
+                    id: msg.author.id,
+                    username: msg.author.username,
+                    discriminator: msg.author.discriminator
+                },
+                guild: {
+                    id: msg.guild.id,
+                    name: msg.guild.name
+                },
+                channel: {
+                    id: msg.channel.id,
+                    name: msg.channel.name
+                },
+                params: msg.params,
+                timestamp: msg.createdTimestamp
+            })
+        } else {
+            return this.collection("cmdLogs").insertOne({
+                command: cmd.name,
+                user: {
+                    id: msg.author.id,
+                    username: msg.author.username,
+                    discriminator: msg.author.discriminator
+                },
+                guild: null,
+                channel: "DM",
+                params: msg.params,
+                timestamp: msg.createdTimestamp
+            })
+        }
     }
 
     createSettings(id) { 
         return this.collection("guildSettings").insertOne({ id })
     }
 
-    // eslint-disable-next-line no-unused-vars
     updateSettings(id, settings) {
         return this.collection("guildSettings").updateOne({ id }, { $set: settings })
     }
@@ -79,6 +97,28 @@ class MongoManager {
         return settings
     }
 
+    // yea, totaly not copy paste...
+    createUserSettings(id) {
+        return this.collection("userSettings").insertOne({ id })
+    }
+
+    async getUserSettings(id) {
+        const settings = await this.collection("userSettings").findOne({ id })
+        if(!settings) return settings
+        delete settings.id
+        delete settings._id
+        return settings
+    }
+
+    async getUserPermissions(id) {
+        const settings = await this.collection("userSettings").findOne({ id })
+        if(!settings) return null
+        return settings.permisisons
+    }
+    async setUserPermissions(id, permissions) {
+        return this.collection("userSettings").updateOne({ id }, { $set: { permissions } })
+    }
+
     close() {
         this.mongoDB.close()
     }
@@ -88,8 +128,8 @@ let manager = false
 
 // eslint-disable-next-line no-unused-vars
 module.exports = function(client) {
-    if(!client.config.useDB) return Promise.resolve(new FakeManager()) // for testing..
-
+    if(!client.config.run.mongo) return Promise.resolve(new FakeManager()) // for testing..
+    
     return new Promise((res, rej) => {
         if(manager) {
             console.warn("MongoDB manager is already created!")

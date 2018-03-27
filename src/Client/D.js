@@ -3,7 +3,9 @@ const { pathGetter } = require("./Utils/main.js")
 require("./Utils/Logger.js");
 const extend = [
     "Message",
-    "Guild"
+    "Guild",
+    "GuildChannel",
+    "User"
 ]
 const path = pathGetter(__dirname, "djsExtends")
 for(const name of extend) {

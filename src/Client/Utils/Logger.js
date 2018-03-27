@@ -4,7 +4,7 @@ class Logger {
     constructor() {
         this.bold = { open: '\u001b[1m', close: '\u001b[22m' }
         this.black = { open: '\u001b[30m', close: '\u001b[39m' }
-        this.red = { open: '\u001b[31m', close: '\u001b[31m' }
+        this.red = { open: '\u001b[31m', close: '\u001b[39m' }
         this.green = { open: '\u001b[32m', close: '\u001b[39m' }
         this.yellow = { open: '\u001b[33m', close: '\u001b[39m' }
         this.blue = { open: '\u001b[34m', close: '\u001b[39m' }

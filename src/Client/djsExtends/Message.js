@@ -37,7 +37,9 @@ Object.defineProperties(Discord.Message.prototype, {
     },
     "prefix": {
         get: function() {
-            return this.channel.guild.prefix
+            if(this.channel.type === "text")
+                return this.channel.guild.prefix
+            return this.client.constants.defaults.guildSettings.prefix
         }
     }
 })

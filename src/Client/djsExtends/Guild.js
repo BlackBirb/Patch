@@ -1,3 +1,5 @@
+const { defaults: { guildSettings } } = require("../Utils/Constants.js")
+
 module.exports = Discord => 
 Object.defineProperties(Discord.Guild.prototype, {
     "voice": {
@@ -27,7 +29,7 @@ Object.defineProperties(Discord.Guild.prototype, {
      */
     "clearSettings": {
         value: async function() {
-            this.settings = Object.assign({}, this.constants.defaults.guildSettings)
+            this.settings = Object.assign({}, guildSettings)
             await this.client.db.removeSettinngs(this.id)
             return this.clinet.db.createSettings(this.id)
         }
@@ -40,10 +42,10 @@ Object.defineProperties(Discord.Guild.prototype, {
         value: async function() {
             let settings = await this.client.db.getSettings(this.id)
             if(!settings) {
-                settings = this.client.constants.defaults.guildSettings
+                settings = guildSettings
                 this.client.db.createSettings(this.id, settings)
             }
-            return this.settings = Object.assign({}, this.client.constants.defaults.guildSettings, settings) // in case there's new setting that this guild doesn't have
+            return this.settings = Object.assign({}, guildSettings, settings) // in case there's new setting that this guild doesn't have
             // and it's ok if it won't be saved with new ones, that would be even better... :thonk:
         }
     },
