@@ -1,4 +1,4 @@
-const { defaults: { userSettings } } = require("../Utils/Constants.js")
+const { defaults: { userSettings }, PERMISSIONS: { FULL_ADMIN } } = require("../Utils/Constants.js")
 
 module.exports = Discord => 
 Object.defineProperties(Discord.User.prototype, {
@@ -24,9 +24,53 @@ Object.defineProperties(Discord.User.prototype, {
             return this.settings.permissions
         },
         set: async function(perms) {
-            if(isNaN(perms)) return Promise.reject("Not a number")
-            this.client.db.setUserPermissions(this.id, perms)
-            this.settings.permissions = perms
+            if(!this.settings.permissions) await this.updateSettings()
+            this.client.db.setUserPermissions(this.id, Object.assign(this.settings.permissions, perms))
+        }
+    },
+    getPermissions: {
+        value: async function(on = "GLOBAL") {
+            return this.permissions.then(all => {
+                let permissions = all[on]
+                if(!permissions && this.client.guilds.has(on)) // i will never be when guild === "GLOBAL" don't worry me
+                    permissions = this.client.guilds.get(on).settings.defaultPermissions
+                return permissions
+            })
+        }
+    },
+    editPermission: {
+        value: async function(perms = 0x1, guild = "GLOBAL") {
+            let permissions = await this.getPermissions(guild)
+            
+            permissions = permissions ^ perms
+
+            this.permissions = permissions
+            return permissions
+        }
+    },
+    hasPermissionIn: {
+        value: async function(permission, guild = "GLOBAL") {
+            let permissions = await this.getPermissions(guild)
+            return (permissions & permission) === permission || permissions === FULL_ADMIN
+        }
+    },
+    hasPermission: { // works like hasPermissionIn but also checks GLOBAL if failed in guild.
+        value: async function(permission, guild) {
+            return await this.permissions.then(all => {
+                let res = false
+                if(guild && guild !== "GLOBAL") {
+                    let guildPerms = all[guild]
+                    if(!guildPerms && this.client.guilds.has(guild)) // copypaste
+                        guildPerms = this.client.guilds.get(guild).settings.defaultPermissions
+                    res = (guildPerms & permission) === permission || guildPerms === FULL_ADMIN
+                }
+                if(!res) {
+                    let globalPerms = all["GLOBAL"]
+                    res = (globalPerms & permission) === permission || globalPerms === FULL_ADMIN
+                }
+                return res
+            })
+
         }
     }
 })

@@ -7,7 +7,11 @@ class FakeManager { // for testing when i'm too lazy to start mongoDB
     updateSettings() { return Promise.resolve(true) }
     removeSettinngs() { return Promise.resolve(true) }
     getSettings() { return Promise.resolve(false) }
-    close() { }
+    close() { return false }
+    createUserSettings() { return Promise.resolve(true) }
+    async getUserSettings() { return Promise.resolve(false) }
+    async getUserPermissions() { return Promise.resolve(false) }
+    async setUserPermissions() { return Promise.resolve(true) }
 }
 
 class MongoManager {

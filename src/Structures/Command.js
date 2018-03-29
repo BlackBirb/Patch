@@ -7,6 +7,7 @@ module.exports = class Command {
         this.id = id
         this.types = false
         this.group = "unassigned"
+        this.permissions = client.constants.PERMISSIONS.DEFAULT
     }
 
     guildOptions(guild) {

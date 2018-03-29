@@ -4,7 +4,10 @@ const messages = {
     noPerm: ["Sorry but I'm not going to listen to you."]
 }
 
-module.exports = async function(msg) {
+module.exports = async function(msg) { // fix this
+    if(!msg.guild.settings.active) return;
+    if(msg.guild.settings.blacklistedChannels.includes(msg.channel.id)) return;
+
     const cmd = this.registry.find(msg.command)
 
     if(!cmd) {
@@ -44,14 +47,18 @@ module.exports = async function(msg) {
     }
 
     // check permissions +
-    if(cmd.hasOwnProperty("permissions")) {
+    if(msg.author.id !== this.config.authorID) {
         let user = await msg.author.permissions
-        if(!user) {
-            if(msg.channel.type !== "text")
-                return msg.reply("Sorry but you don't have permission for that.")
-            user = msg.guild.settings.defaultPermissions
-        } else if(user !== this.constants.PERMISSIONS.FULL_ADMIN) {
-            if((user & cmd.permissions) !== cmd.permissions) 
+        let perms = false
+        if(msg.channel.type !== "text")
+            perms = user["GLOBAL"]
+        else if(user.hasOwnProperty(msg.guild.id))
+            perms = user[msg.guild.id]
+        else
+            perms = msg.guild.settings.defaultPermissions
+
+        if(perms !== this.constants.PERMISSIONS.FULL_ADMIN) {
+            if((perms & cmd.permissions) !== cmd.permissions) 
                 return msg.reply(this.utils.pickRandom(messages.noPerm))
         }
     }

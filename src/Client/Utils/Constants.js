@@ -10,6 +10,7 @@ module.exports = {
 }
 
 module.exports.PERMISSIONS = { // ???
+    "BLACKLISTED": 0x0,
     "DEFAULT": 0x1,
     "EVAL": 1 << 29,
     "FULL_ADMIN": 1 << 30
@@ -22,9 +23,13 @@ module.exports.defaults = {
             dicc: "Yes i like",
             try: "Author: $author#\nNo mention: $authornick#\nchannel: $channel#\nparams: $params#\nparam2: $param2#"
         },
-        defaultPermissions: 0x1
+        defaultPermissions: 0x1,
+        active: true,
+        blacklistedChannels: []
     },
     userSettings: {
-        permissions: 0x1
+        permissions: {
+            "GLOBAL": 0x1
+        }
     }
 }
