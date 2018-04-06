@@ -8,6 +8,7 @@ module.exports = class Eval extends Command {
         this.name = "eval"
         this.aliases = ["do"]
         this.permissions = this.client.constants.PERMISSIONS.EVAL
+        this.ignoreBlacklist = true
         
         this.channels = ["text", "dm"]
 
@@ -16,17 +17,11 @@ module.exports = class Eval extends Command {
         this.types = { 
             "code": {
                 required: true,
+                type: "String",
                 err: "I need code to evaluate!"
             }
         }
 
-        /**
-         * Function that returns object!
-         * 
-         * Each guild will have it's own version of object returned by this.data, you can acces it in any command function just like it would be in this object, so `this.data`
-         * 
-         * @optional
-         */
         this.data = () => ({
             "guildData": 0,
             "Itz test": "and it works"
@@ -45,11 +40,9 @@ module.exports = class Eval extends Command {
 
     async parse(start, res, code = "", err = false) {
         code = code.replace(/```/g, "`'`")
-        if(err) {
-            const splited = res.stack.split("\n")
-            const index = splited.findIndex(v => v.trim().toLowerCase().startsWith("at eval"))
-            return `*Crashed in ${Date.now() - start}ms*\n\`\`\`js\neval:0\n${code.trim()}\n^\n\n${splited.slice(0,index).join("\n")}\`\`\``
-        }
+        if(err) 
+            return `*Crashed in ${Date.now() - start}ms*\n\`\`\`js\neval:0\n${code.trim()}\n^\n\n${res.stack.split("\n")[0]}\`\`\``
+
         if(res instanceof Promise) {
             const executed = Date.now() - start
             const resolve = await res

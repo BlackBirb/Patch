@@ -8,9 +8,9 @@ Object.defineProperties(Discord.Message.prototype, {
     "prepareCommand": {
         value: function() {
             const reg = {
-                prefix: new RegExp(`^${this.prefix}(\\w+)(?: (.+))?`,"gi"),
-                mention: /^<@!?\d{18}> ?(\w+)(?: (.+))?/gi,
-                nickname: /^Patch, ?(\w+)(?: (.+))?/gi
+                prefix: new RegExp(`^${this.prefix}(\\w+)(?: (.+))?`,"gis"),
+                mention: /^<@!?\d{18}> ?(\w+)(?: (.+))?/gis,
+                nickname: /^patch, ?(\w+)(?: (.+))?/gis
             }
             let isCmd = reg.prefix.exec(this.content)
             if(!isCmd) {
@@ -32,6 +32,16 @@ Object.defineProperties(Discord.Message.prototype, {
             this.type = "COMMAND"
             this.command = name
             this.params = params
+            return this
+        }
+    },
+    "checkIfResponse": {
+        value: async function() {
+            let res = await this.client.db.findResponse(this.content, this.author.id, this.guild && this.guild.id)
+            if(res) {
+                this.type = "RESPONSE"
+                this.responses = res
+            }
             return this
         }
     },

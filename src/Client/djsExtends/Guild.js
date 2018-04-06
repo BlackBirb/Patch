@@ -18,10 +18,10 @@ Object.defineProperties(Discord.Guild.prototype, {
      */
     "updateSettings": {
         value: function(settings) {
-            for(const key of Object.keys(settings.payload)) {
-                this.settings[key] = settings.payload[key]
+            for(const key of Object.keys(settings)) {
+                this.settings[key] = settings[key]
             }
-            return this.client.db.updateSettings(this.id, settings.payload)
+            return this.client.db.updateSettings(this.id, settings)
         } 
     },
     /**
@@ -61,9 +61,8 @@ Object.defineProperties(Discord.Guild.prototype, {
             return this.settings.tags
         },
         set: function(tag) {
-            const tags = this.settings.tags.slice()
-            tags.push(tag)
-            this.updateSettings(tags)
+            const tags = Object.assign(this.settings.tags, tag)
+            this.updateSettings({ tags })
             return tags
         }
     },
@@ -74,6 +73,16 @@ Object.defineProperties(Discord.Guild.prototype, {
         set: function(prefix) {
             this.updateSettings({ prefix })
             return prefix
+        }
+    },
+    "active": {
+        value: function(setting) {
+            if(setting === undefined) 
+                return this.settings.active
+            else if(setting === true && !this.settings.active)
+                return this.updateSettings({ active: true }).then(() => this.settings.active)
+            else if(setting === false && this.settings.active)
+                return this.updateSettings({ active: false }).then(() => this.settings.active)
         }
     },
     "commandData": {

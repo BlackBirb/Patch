@@ -1,5 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const { mongoUrl } = require("../Utils/Constants.js")
+const { mongoUrl, defaults  } = require("../Utils/Constants.js")
 
 class FakeManager { // for testing when i'm too lazy to start mongoDB
     logCommand() { return Promise.resolve(true) }
@@ -9,9 +9,13 @@ class FakeManager { // for testing when i'm too lazy to start mongoDB
     getSettings() { return Promise.resolve(false) }
     close() { return false }
     createUserSettings() { return Promise.resolve(true) }
-    async getUserSettings() { return Promise.resolve(false) }
-    async getUserPermissions() { return Promise.resolve(false) }
-    async setUserPermissions() { return Promise.resolve(true) }
+    getUserSettings() { return Promise.resolve(false) }
+    getUserPermissions() { return Promise.resolve(false) }
+    setUserPermissions() { return Promise.resolve(true) }
+    getUserAccount(id) { return Promise.resolve(Object.assign({}, { id }, defaults.userAccount)) }
+    updateUserAccount() { return Promise.resolve(true) }
+    findResponse() { return Promise.resolve(null) }
+    addResponse() { return Promise.resolve(false) }
 }
 
 class MongoManager {
@@ -35,6 +39,22 @@ class MongoManager {
             "userSettings": {
                 db: "settings",
                 collection: "user"
+            },
+            "userAccounts": {
+                db: "accounts",
+                collection: "user"
+            },
+            "globalResponses": {
+                db: "responses",
+                collection: "global"
+            },
+            "userResponses": {
+                db: "responses",
+                collection: "user"
+            },
+            "guildResponses": {
+                db: "responses",
+                collection: "guild"
             }
         }
     }
@@ -119,8 +139,133 @@ class MongoManager {
         if(!settings) return null
         return settings.permisisons
     }
+
+    async updateUserSettings(id, settings) {
+        return this.collection("userSettings").updateOne({ id }, { $set: settings })
+    }
+
     async setUserPermissions(id, permissions) {
         return this.collection("userSettings").updateOne({ id }, { $set: { permissions } })
+    }
+
+    async getUserAccount(id) {
+        let acc = await this.collection("userAccounts").findOne({ id })
+        if(!acc) {
+            acc = Object.assign({}, { id }, defaults.userAccount )
+            console.log(acc)
+            await this.collection("userAccounts").insertOne(acc)
+        }
+        delete acc._id
+        return acc
+    }
+
+    async updateUserAccount(id, data) {
+        return await this.collection("userAccounts").updateOne({ id }, { $set: data })
+    }
+
+    /* eslint-disable */
+    get responseStructure() {
+        let query = ["hi", "hello"]
+        let response = ["Hey!"]
+        const globalResponses = {
+            query: ["hi", "hello"],
+            responses: ["Hey!"]
+        }
+        const userResponses = {
+            "123456789": [
+                {
+                    query: ["hi", "hello"],
+                    responses: ["Hey!"]
+                }
+            ]
+        }
+        const guildResponses = {
+            id: [
+                {
+                    query: ["things"],
+                    responses: ["derp"]
+                }
+            ]
+        }
+
+        return responses
+    }
+
+    async findResponse(msg, authorID, guildID) {
+        const global = await this.collection("globalResponses").findOne({
+            query: msg
+        })
+        if(global) return global.responses
+        if(authorID) {
+            const user = await this.collection("userResponses").findOne({ 
+                [authorID]: {
+                    $elemMatch: {
+                        query: msg
+                    }
+                }
+            })
+            if(user) return user[authorID][0].responses
+        }
+        if(guildID) {
+            const guild = await this.collection("guildResponses").findOne({ 
+                [guildID]: {
+                    $elemMatch: {
+                        query: msg
+                    }
+                }
+            })
+            if(guild) return guild[guildID][0].responses
+        }
+        
+        return null
+    }
+
+    async addResponse(query, responses, type = "global", id) {
+        if (type === "global") {
+            return this.collection("globalResponses").updateOne(
+                {
+                    $or: [
+                        { query },
+                        { responses }
+                    ]
+                },
+                {
+                    $addToSet: {
+                        query,
+                        responses
+                    }
+                },
+                { upsert: true }
+            )
+        }
+        if (type === "user" || type === "global") {
+            if(await this.collection(type+"Responses").findOne({ [id]: { $exists : true } }))
+                return this.collection(type + "Responses").updateOne(
+                    {
+                        $or: [
+                            { [id]: { $elemMatch: { query } } },
+                            { [id]: { $elemMatch: { responses } } }
+                        ]
+                    },
+                    {
+                        $addToSet: {
+                            [`${id}.$[].query`]: query,
+                            [`${id}.$[].responses`]: responses
+                        }
+                    }
+                    // upsert doesn't work :C
+                )
+            else
+                return this.collection(type+"Responses").insertOne({
+                    [id]: [
+                        {
+                            query: [ query ],
+                            responses: [ responses ]
+                        }
+                    ]
+                })
+        }
+        return null
     }
 
     close() {

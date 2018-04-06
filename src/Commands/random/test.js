@@ -19,7 +19,10 @@ module.exports = class Test extends Command {
         // @optional
         this.permissions = this.client.constants.PERMISSIONS.DEFAULT
         
-        // on what channel types command should work
+        // If ture this command will work even if channel or build is blacklisted/inactvie
+        this.ignoreBlacklist = false
+
+        // On what channel types command should work
         this.channels = ["text", "dm"]
 
         // array or string of permissions that bot must have to even run command, bot always checks for
@@ -40,6 +43,7 @@ module.exports = class Test extends Command {
          * <Object> {
          *     subcommandName? {
          *          paramName: {
+         *              type: <String> // only for help command
          *              required?: <Boolean>
          *              err?: <String>
          *          }
@@ -51,15 +55,19 @@ module.exports = class Test extends Command {
         this.types = { 
             hello: {
                 "name": {
+                    type: "String",
                     required: false
                 }
             },
             run: {
                 "number": {
+                    type: "Number",
                     required: true,
                     err: "Need some number!"
                 },
-                "k": {}
+                "k": {
+                    type: "Any"
+                }
             }
         }
 

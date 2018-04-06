@@ -5,16 +5,20 @@ const messages = {
 }
 
 module.exports = async function(msg) { // fix this
-    if(!msg.guild.settings.active) return;
-    if(msg.guild.settings.blacklistedChannels.includes(msg.channel.id)) return;
-
     const cmd = this.registry.find(msg.command)
+
+    if(msg.channel.type === "text" && cmd && !cmd.ignoreBlacklist) {
+        if(!msg.guild.settings.active) return;
+        if(msg.guild.settings.blacklistedChannels.includes(msg.channel.id)) return;
+    }
 
     if(!cmd) {
         if(msg.channel.type === "text") {
             const tag = msg.guild.tag(msg.command, msg)
-            if(tag !== null)
+            if(tag !== null) {
+                msg.type = "TAG"
                 return msg.channel.send(tag)
+            }
         }
         return msg.react(failCommand)
     }

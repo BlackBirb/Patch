@@ -11,7 +11,7 @@ module.exports = {
 
 module.exports.PERMISSIONS = { // ???
     "BLACKLISTED": 0x0,
-    "DEFAULT": 0x1,
+    "DEFAULT": 1 << 0,
     "EVAL": 1 << 29,
     "FULL_ADMIN": 1 << 30
 },
@@ -25,11 +25,15 @@ module.exports.defaults = {
         },
         defaultPermissions: 0x1,
         active: true,
-        blacklistedChannels: []
+        blacklistedChannels: [],
+        responses: true
     },
     userSettings: {
         permissions: {
             "GLOBAL": 0x1
         }
+    },
+    userAccount: {
+        currency: 0 // and?
     }
 }

@@ -7,6 +7,9 @@ Object.defineProperties(Discord.User.prototype, {
         writable: true
     },
 
+    /**
+     * Loads settings to cache
+     */
     updateSettings: {
         value: async function() {
             let settings = await this.client.db.getUserSettings(this.id)
@@ -17,6 +20,9 @@ Object.defineProperties(Discord.User.prototype, {
             return this.settings = Object.assign({}, userSettings, settings)
         }
     },
+    /**
+     * Returns or sets permissions for all guilds and global.
+     */
     permissions: {
         get: async function() {
             if(this.settings.permissions) return this.settings.permissions
@@ -28,6 +34,9 @@ Object.defineProperties(Discord.User.prototype, {
             this.client.db.setUserPermissions(this.id, Object.assign(this.settings.permissions, perms))
         }
     },
+    /**
+     * Is a function that returns permissions in specific guild / global
+     */
     getPermissions: {
         value: async function(on = "GLOBAL") {
             return this.permissions.then(all => {
@@ -38,25 +47,34 @@ Object.defineProperties(Discord.User.prototype, {
             })
         }
     },
+    /**
+     * Edits permissions for guild or globally
+     * @param {Number} perms bitfield permissions to run through exor
+     * @param {String} guild build to change permissions on, default is global
+     */
     editPermission: {
-        value: async function(perms = 0x1, guild = "GLOBAL") {
-            let permissions = await this.getPermissions(guild)
-            
-            permissions = permissions ^ perms
-
-            this.permissions = permissions
-            return permissions
+        value: async function(perms, guild = "GLOBAL") {
+            if(perms === undefined) return false
+            const permissions = await this.getPermissions(guild)
+            return this.permissions = permissions ^ perms
         }
     },
+    /**
+     * Checks if user have permission in specified channel
+     * @returns {Promise<Boolean>}
+     */
     hasPermissionIn: {
         value: async function(permission, guild = "GLOBAL") {
             let permissions = await this.getPermissions(guild)
             return (permissions & permission) === permission || permissions === FULL_ADMIN
         }
     },
-    hasPermission: { // works like hasPermissionIn but also checks GLOBAL if failed in guild.
+    /**
+     * Works like hasPermissionIn but also checks GLOBAL if failed in guild.
+     */
+    hasPermission: {
         value: async function(permission, guild) {
-            return await this.permissions.then(all => {
+            return this.permissions.then(all => {
                 let res = false
                 if(guild && guild !== "GLOBAL") {
                     let guildPerms = all[guild]
@@ -70,7 +88,29 @@ Object.defineProperties(Discord.User.prototype, {
                 }
                 return res
             })
-
+        }
+    },
+    /**
+     * Returns account from cache or database
+     * Setes only local cache
+     */
+    account: {
+        get: async function() {
+            if(this._account) return this._account
+            this._account = await this.client.db.getUserAccount(this.id) 
+            return this._account
+        },
+        set: function(things) {
+            this._account = things
+        }
+    },
+    /**
+     * Updates account with specified data
+     */
+    updateAccount: {
+        value: async function(data) {
+            await this.client.db.updateUserAccount(this.id, data)
+            return Object.assign(this._account, data)
         }
     }
 })
