@@ -6,6 +6,10 @@ module.exports = class Eval extends Command {
         super(client, id)
         
         this.name = "eval"
+        this.help = {
+            desc: "Evaluates any js code in bot scope.",
+            format: "[JS code]"
+        }
         this.aliases = ["do"]
         this.permissions = this.client.constants.PERMISSIONS.EVAL
         this.ignoreBlacklist = true

@@ -5,7 +5,11 @@ const Command = require("../../Structures/Command.js")
 module.exports = class Account extends Command {
     constructor(c, i) {
         super(c, i)
+        
         this.name = "account"
+        this.help = {
+            desc: "Shows your account information."
+        }
         this.aliases = ["me"]
 
         this.descriptions = [
@@ -28,7 +32,7 @@ module.exports = class Account extends Command {
         const embed = new MessageEmbed()
             .setTitle(`${msg.member ? msg.member.displayName : msg.author.username}'s account.`)
             .setThumbnail(msg.author.avatarURL)
-            .setDescription(this.client.utils.pickRandom(this.descriptions))
+            .setDescription(this.utils.pickRandom(this.descriptions))
             .setColor(constants.STYLE.richEmbed.color)
             .addField("Moneyz", account.currency + " 🍪", true)
             .addField("Custom tags?", `${Object.keys(account.tags).length || "Nope."}`, true)

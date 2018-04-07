@@ -8,32 +8,58 @@ module.exports = class Test extends Command {
         
         // default command name
         this.name = "test"
+
+        /** Command help
+         * 
+         * text - short or not explanation about command, 
+         * 
+         * format - properly formated suffix description can be array
+         *          @optional but recomended
+         * 
+         * examples - array of examples on how to use command
+         *            @optional 
+         */
+        this.help = {
+            desc: "Don't us this commands, it's made only to show how to create one.",
+            format: "[Number] <String> / hello <name>",
+            examples: [
+                "321 FOO",
+                "123",
+            ]
+        }
         
-        // aliases for command, duh 
-        // @optional - null
+        /** aliases for command, duh 
+         * @optional null
+         */
         this.aliases = ["testing"]
         
-        // Permissions can be found at /src/Client/Utils/Constants
-        // Never write them as numbers, they might change
-        // DEFAULT permissions mean that if admin changes default permissions for user they won't work
-        // @optional - default
+        /** Permissions can be found at /src/Client/Utils/Constants
+         * Never write them as numbers, they might change
+         * DEFAULT permissions mean that if admin changes default permissions for user they won't work
+         * @optional default
+         */
         this.permissions = this.client.constants.PERMISSIONS.DEFAULT
         
-        // If ture this command will work even if channel or build is blacklisted/inactvie
-        // @optional - false
+        /** If ture this command will work even if channel or build is blacklisted/inactvie
+         * @optional false
+         */
         this.ignoreBlacklist = false
 
-        // On what channel types command should work
-        // @optional - all
+        /** On what channel types command should work
+         * @optional all
+         */
         this.channels = ["text", "dm"]
 
-        // array or string of permissions that bot must have to even run command, bot always checks for
-        // "VIEV_CHANNEL" "SEND_MESSAGES" by default
+        /** array or string of permissions that bot must have to even run command
+         * 
+         * Always checks for "VIEV_CHANNEL" "SEND_MESSAGES" by default
+         */
         this.requiredPermissions = "ADD_REACTIONS"
 
-        // this command won't be initialized, nothing will see it.
-        // @optional - false
-        this.disabled = false
+        /** this command won't be initialized, nothing will see it.
+         * @optional false
+         */
+        this.disabled = true
 
         /**
          * You can define types for you command, you can later access them in run with params.nameYouSpecified
@@ -45,7 +71,6 @@ module.exports = class Test extends Command {
          * <Object> {
          *     subcommandName? {
          *          paramName: {
-         *              type: <String> // only for help command
          *              required?: <Boolean>
          *              err?: <String>
          *          }
@@ -57,19 +82,15 @@ module.exports = class Test extends Command {
         this.types = { 
             hello: {
                 "name": {
-                    type: "String",
                     required: false
                 }
             },
             run: {
                 "number": {
-                    type: "Number",
                     required: true,
                     err: "Need some number!"
                 },
-                "k": {
-                    type: "Any"
-                }
+                "k": {}
             }
         }
 

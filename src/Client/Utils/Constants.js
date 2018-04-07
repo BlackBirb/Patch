@@ -11,7 +11,8 @@ module.exports = {
 
 module.exports.STYLE = {
     richEmbed: {
-        color: 3447003
+        color: 3447003,
+        colorFail: 0xCC181E
     }
 }
 

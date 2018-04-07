@@ -5,7 +5,11 @@ const Command = require("../Structures/Command.js")
 module.exports = class Ping extends Command {
     constructor(client, id) {
         super(client, id)
+
         this.name = "ping"
+        this.help = {
+            desc: "Check how laggy i'm"
+        }
         this.aliases = ["pong"]
         this.channels = ["text", "dm"]
 
@@ -54,7 +58,7 @@ module.exports = class Ping extends Command {
 
         const embed = new RichEmbed()
             .setColor(color)
-            .setTitle(this.client.utils.pickRandom(this.messages))
+            .setTitle(this.utils.pickRandom(this.messages))
             .addField("Http ping", ping.http, true)
             .addField("Websocket ping", ping.ws, true)
 
