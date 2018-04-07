@@ -1,4 +1,4 @@
-const { defaults: { userSettings }, PERMISSIONS: { FULL_ADMIN } } = require("../Utils/Constants.js")
+const { defaults: { userSettings, userAccount }, PERMISSIONS: { FULL_ADMIN } } = require("../Utils/Constants.js")
 
 module.exports = Discord => 
 Object.defineProperties(Discord.User.prototype, {
@@ -90,14 +90,17 @@ Object.defineProperties(Discord.User.prototype, {
             })
         }
     },
+
     /**
      * Returns account from cache or database
      * Setes only local cache
+     * 
+     * ~~Returns promise if not cached and doesn't if cached... nvm, bad idea~~
      */
     account: {
         get: async function() {
             if(this._account) return this._account
-            this._account = await this.client.db.getUserAccount(this.id) 
+            this._account = Object.assign({}, userAccount, await this.client.db.getUserAccount(this.id))
             return this._account
         },
         set: function(things) {

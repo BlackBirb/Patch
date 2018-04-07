@@ -10,19 +10,21 @@ module.exports = class Test extends Command {
         this.name = "test"
         
         // aliases for command, duh 
-        // @optional
+        // @optional - null
         this.aliases = ["testing"]
         
         // Permissions can be found at /src/Client/Utils/Constants
         // Never write them as numbers, they might change
         // DEFAULT permissions mean that if admin changes default permissions for user they won't work
-        // @optional
+        // @optional - default
         this.permissions = this.client.constants.PERMISSIONS.DEFAULT
         
         // If ture this command will work even if channel or build is blacklisted/inactvie
+        // @optional - false
         this.ignoreBlacklist = false
 
         // On what channel types command should work
+        // @optional - all
         this.channels = ["text", "dm"]
 
         // array or string of permissions that bot must have to even run command, bot always checks for
@@ -30,7 +32,7 @@ module.exports = class Test extends Command {
         this.requiredPermissions = "ADD_REACTIONS"
 
         // this command won't be initialized, nothing will see it.
-        // @optional
+        // @optional - false
         this.disabled = false
 
         /**

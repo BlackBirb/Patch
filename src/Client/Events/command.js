@@ -14,11 +14,12 @@ module.exports = async function(msg) { // fix this
 
     if(!cmd) {
         if(msg.channel.type === "text") {
-            const tag = msg.guild.tag(msg.command, msg)
-            if(tag !== null) {
-                msg.type = "TAG"
+            let tag = msg.guild.tag(msg.command, msg)
+            if(tag === null) 
+                tag = await msg.author.account.then(a => a.tags[msg.command]) || null //bug
+
+            if(tag !== null) 
                 return msg.channel.send(tag)
-            }
         }
         return msg.react(failCommand)
     }

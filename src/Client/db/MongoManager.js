@@ -151,11 +151,11 @@ class MongoManager {
     async getUserAccount(id) {
         let acc = await this.collection("userAccounts").findOne({ id })
         if(!acc) {
-            acc = Object.assign({}, { id }, defaults.userAccount )
-            console.log(acc)
+            acc = { id, currency: 0 }
             await this.collection("userAccounts").insertOne(acc)
         }
         delete acc._id
+        delete acc.id
         return acc
     }
 

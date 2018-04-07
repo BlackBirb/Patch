@@ -9,6 +9,12 @@ module.exports = {
     webURL: "https://soon.lol/"
 }
 
+module.exports.STYLE = {
+    richEmbed: {
+        color: 3447003
+    }
+}
+
 module.exports.PERMISSIONS = { // ???
     "BLACKLISTED": 0x0,
     "DEFAULT": 1 << 0,
@@ -34,6 +40,12 @@ module.exports.defaults = {
         }
     },
     userAccount: {
-        currency: 0 // and?
+        currency: 0,
+        customHug: {
+            give: null,
+            back: null,
+            "get?": null
+        },
+        tags: {}
     }
 }

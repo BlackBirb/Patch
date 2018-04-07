@@ -8,6 +8,7 @@ module.exports = class Command {
         this.types = false
         this.group = "unassigned"
         this.permissions = client.constants.PERMISSIONS.DEFAULT
+        this.ignoreBlacklist = false
     }
 
     guildOptions(guild) {
