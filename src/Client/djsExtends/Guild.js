@@ -3,7 +3,7 @@ const { defaults: { guildSettings } } = require("../Utils/Constants.js")
 module.exports = Discord => 
 Object.defineProperties(Discord.Guild.prototype, {
     "voice": {
-        value: {}, // new VoiceManager() ?
+        value: undefined,
         writable: true
     },
     "settings": {

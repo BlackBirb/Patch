@@ -57,6 +57,7 @@ module.exports = class Command {
         const cmdScope = Object.assign({}, this, {
             data: this.guildOptions(msg.guild),
             voice: msg.guild.voice,
+            voiceManager: this.client.VoiceManager,
             utils: this.client.utils
         })
 

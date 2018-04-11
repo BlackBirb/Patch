@@ -5,7 +5,7 @@ module.exports = {
     mongoUrl: "mongodb://localhost:27017/",
     asyncServices: ["Commands","MongoDB", "DiscordJS"], // API in future
     statusChangeDelay: 600000, // 5 min,
-    inviteLink: "soon",
+    inviteLink: "https://discordapp.com/oauth2/authorize?client_id=207051061213528064&scope=bot&permissions=104188992",
     webURL: "https://soon.lol/"
 }
 
@@ -33,7 +33,10 @@ module.exports.defaults = {
         defaultPermissions: 0x1,
         active: true,
         blacklistedChannels: [],
-        responses: true
+        responses: true,
+        voice: {
+            volume: .5
+        }
     },
     userSettings: {
         permissions: {
@@ -49,4 +52,13 @@ module.exports.defaults = {
         },
         tags: {}
     }
+}
+
+module.exports.VOICE = {
+    codes: {
+        noPermissions: 0,
+        differentGuild: 1,
+        fullChannel: 2
+    },
+    ytdlOptions: { filter : 'audioonly' }
 }

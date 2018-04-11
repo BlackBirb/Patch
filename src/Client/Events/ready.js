@@ -5,7 +5,10 @@ module.exports = function(evn) {
     }
     
     console.loading("Getting guilds settings...")
-    this.guilds.forEach(g => g.loadSettings())
+    this.guilds.forEach(g => {
+        g.loadSettings()
+        g.voice = new (this.VoiceManager)(g)
+    })
     console.ok("Guilds settings loaded")
     
     if(this.config.hasOwnProperty("run")) { // REMOVE PLZ >.-.<

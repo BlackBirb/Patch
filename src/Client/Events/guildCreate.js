@@ -12,6 +12,7 @@ module.exports = function(guild) {
             text: `Created by ${this.constants.author}, ${end()} ~ <3`
         }
     }})
+    guild.voice = new (this.VoiceManager)(guild)
 
     console.ok("Guild ready.")
 }

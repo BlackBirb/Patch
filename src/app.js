@@ -12,6 +12,7 @@ module.exports = class Bot extends Discord.Client {
         this.utils = utils
         this.constants = constants
         this.logger = require("./Client/Utils/Logger.js");
+        this.VoiceManager = require("./Client/Voice/Manager.js")
 
         this.waitForServices()
         this.db = null

@@ -39,7 +39,7 @@ module.exports = class Help extends Command {
     }
 
     async run(msg, params) {
-        if(!msg.guild.active() || msg.channel.blacklisted) 
+        if(msg.channel.type === "text" && (!msg.guild.active() || msg.channel.blacklisted)) 
             return msg.reply("I was told not to answer on this channel, so... bye.")
         const embed = new RichEmbed()
             .setColor(this.client.constants.STYLE.richEmbed.color)
