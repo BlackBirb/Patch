@@ -42,7 +42,7 @@ module.exports = class Help extends Command {
         if(msg.channel.type === "text" && (!msg.guild.active() || msg.channel.blacklisted)) 
             return msg.reply("I was told not to answer on this channel, so... bye.")
         const embed = new RichEmbed()
-            .setColor(this.client.constants.STYLE.richEmbed.color)
+            .setColor(this.client.constants.STYLE.embed.color)
             .setFooter("With <3 ~Patch")
         if(!params.command) {
             embed.setTitle("Help")
@@ -64,7 +64,7 @@ module.exports = class Help extends Command {
                      embed.addField("**> Examples**", cmd.help.examples.map(e => `\`${command} ${e}\``).join("\n"))
             }
             else 
-                embed.setColor(this.client.constants.STYLE.richEmbed.colorFail)
+                embed.setColor(this.client.constants.STYLE.embed.colorFail)
                     .setTitle(`Command ${params.command} not found`)
                     .setDescription(`It seems like there's no such command. ${this.utils.pickRandom(this.noCmdErr)}`)
         }

@@ -3,6 +3,8 @@ module.exports = class Song {
         this.id = data.id
         this.title = data.title
         this.length = parseInt(data.length)
+        this.views = data.views
+        this.thumbnail = data.thumbnail
         this.requester = {
             id: req.id,
             tag: req.tag

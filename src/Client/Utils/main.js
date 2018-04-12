@@ -13,8 +13,15 @@ const transformTag = (tag, msg) => tag
 
 // this all is so stupid and probably slow...
 
+const formatSec = sec => 
+    [Math.floor(sec / 86400),Math.floor(sec / 3600) % 24,Math.floor(sec / 60) % 60,sec % 60 ]
+        .map(v => v < 10 ? "0" + v : v)
+		.filter((v,i) => v !== "00" || i > 1)
+        .join(":")
+        
 module.exports = {
     pathGetter,
     pickRandom,
-    transformTag
+    transformTag,
+    formatSec
 }

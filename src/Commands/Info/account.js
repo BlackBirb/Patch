@@ -33,7 +33,7 @@ module.exports = class Account extends Command {
             .setTitle(`${msg.member ? msg.member.displayName : msg.author.username}'s account.`)
             .setThumbnail(msg.author.avatarURL)
             .setDescription(this.utils.pickRandom(this.descriptions))
-            .setColor(constants.STYLE.richEmbed.color)
+            .setColor(constants.STYLE.embed.color)
             .addField("Moneyz", account.currency + " 🍪", true)
             .addField("Custom tags?", `${Object.keys(account.tags).length || "Nope."}`, true)
             .setFooter("Powered by Patch")

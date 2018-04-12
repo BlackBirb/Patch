@@ -13,8 +13,12 @@ module.exports = class VoiceManager {
         this.guild = g
         this.playing = false
         this.queue = new Queue() // etc.
-        this.connection = null
+        //this.connection = null
         this.msg = new Messenger(this)
+    }
+
+    get connection() {
+        return this.guild.voiceConnection || null
     }
 
     join(channel) {
@@ -22,8 +26,9 @@ module.exports = class VoiceManager {
         if(channel.guild.id !== this.guild.id) return Promise.reject({ code: codes.differentGuild , err: "Channel is in different guild"})
         if(channel.full) return Promise.reject({ code: codes.fullChannel , err: "Channel is full"})
         return channel.join()
-            .then(conn => {
-                this.connection = conn
+            /* eslint-disable-next-line */
+            .then(conn => { 
+                //this.connection = conn
                 return this
             })
             .catch(err => {

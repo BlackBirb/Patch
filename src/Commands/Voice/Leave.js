@@ -1,5 +1,7 @@
 const Command = require("../../Structures/Command.js")
 
+const deleteMessage = m => m.delete(30000)
+
 module.exports = class Play extends Command {
     constructor(client, id) {
         super(client, id)
@@ -10,23 +12,16 @@ module.exports = class Play extends Command {
         }
         this.aliases = ["disconnect"]
         this.channels = ["text"]
-
-        this.leaveMessages = [
-            "Bye!",
-            "See you tommorow!",
-            "Awww, too bad."
-        ]
     }
 
     async run(msg) {
         if(!this.voice.connection) 
             return msg.channel.send("I'm not in voice channel!")
-        
-        const channel = this.voice.voiceChannel
 
-        if(!this.voice.leave()) 
-            return msg.channel.send(`I can't leave while I'm playing a song.`)
+        if(this.voice.playing) 
+            return msg.channel.send(`I can't leave while I'm playing a song.`).then(deleteMessage)
 
-        return msg.channel.send(`Leaving **${channel.name}** channel! *${this.utils.pickRandom(this.leaveMessages)}*`)       
+        this.voice.msg.channelLeave()
+        this.voice.leave()
     }
 }
