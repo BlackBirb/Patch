@@ -27,12 +27,12 @@ module.exports = class Account extends Command {
             "Waaait.. Let me find your accout..."
         ]
     }
-    async run(msg) {
+    async run(msg, params, { utils }) {
         const account = await msg.author.account
         const embed = new MessageEmbed()
             .setTitle(`${msg.member ? msg.member.displayName : msg.author.username}'s account.`)
             .setThumbnail(msg.author.avatarURL)
-            .setDescription(this.utils.pickRandom(this.descriptions))
+            .setDescription(utils.pickRandom(this.descriptions))
             .setColor(constants.STYLE.embed.color)
             .addField("Moneyz", account.currency + " 🍪", true)
             .addField("Custom tags?", `${Object.keys(account.tags).length || "Nope."}`, true)

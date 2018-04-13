@@ -46,7 +46,7 @@ module.exports = class Ping extends Command {
         return [red, green, 0]
     }
 
-    async run(msg) {
+    async run(msg, p, { utils }) {
         const newMsg = await msg.channel.send(`Ping!`)
         const ping = {
             http: newMsg.createdTimestamp - msg.createdTimestamp,
@@ -58,7 +58,7 @@ module.exports = class Ping extends Command {
 
         const embed = new RichEmbed()
             .setColor(color)
-            .setTitle(this.utils.pickRandom(this.messages))
+            .setTitle(utils.pickRandom(this.messages))
             .addField("Http ping", ping.http, true)
             .addField("Websocket ping", ping.ws, true)
 

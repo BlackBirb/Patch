@@ -28,7 +28,7 @@ module.exports = class Play extends Command {
         ]
     }
 
-    async run(msg, params) {
+    async run(msg, params, { voice, utils }) {
         let voiceChannel = msg.member.voiceChannel
         if(!voiceChannel) {
             if(!params.name) 
@@ -40,7 +40,7 @@ module.exports = class Play extends Command {
         }
 
         try {
-            await this.voice.join(voiceChannel)
+            await voice.join(voiceChannel)
         }
         catch(err) {
             if(err.code){
@@ -51,7 +51,7 @@ module.exports = class Play extends Command {
             }
             return msg.channel.send("Ouch, very bad error: "+err)
         }
-        this.voice.msg.setChannel(msg.channel)
-        msg.channel.send(`Voice channel **${voiceChannel.name}** joined! *${this.utils.pickRandom(this.joinMessages)}*`)
+        voice.msg.setChannel(msg.channel)
+        msg.channel.send(`Voice channel **${voiceChannel.name}** joined! *${utils.pickRandom(this.joinMessages)}*`)
     }
 }

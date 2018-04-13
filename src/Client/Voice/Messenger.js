@@ -24,11 +24,11 @@ module.exports = class VoiceMessenger {
     }
 
     async send(...opts) {
-        if(!this.message) {
-            this.message = await this.channel.send(...opts)
-            return this.message
+        if(!this.channel) return;
+        if(this.message) {
+            this.message.delete()
+            this.message = null
         }
-        this.message.delete()
         this.message = await this.channel.send(...opts)
         return this.message
     }
@@ -41,7 +41,7 @@ module.exports = class VoiceMessenger {
             .setDescription(`**${song.title}** \n*Length: ${formatSec(song.length)}*\n*Queue size: ${this.voice.queue.size} | Queue length: ${this.voice.queue.length}*`)
             .setFooter(`Requested by ${song.requester.tag}`)
             .setThumbnail(song.thumbnail)
-        this.send(embed)
+        return this.send(embed)
     }
 
     nextSong(song) {
@@ -53,24 +53,23 @@ module.exports = class VoiceMessenger {
             .setDescription(`**${song.title}** \n*Length: ${formatSec(length)}*`)
             .setFooter(`Requested by ${song.requester.tag}`)
             .setThumbnail(song.thumbnail)
-        this.send(embed)
+        return this.send(embed)
     }
 
     nowPlaying() {
         if(!this.channel) return;
         const song = this.voice.queue.active
+        const embed = new RichEmbed()
+            .setColor(constants.STYLE.embed.color)
+            .setAuthor("Now playing", this.channel.client.user.avatarURL)
         if(!song) {
-            return this.send(new RichEmbed()
-                .setColor(constants.STYLE.embed.color)
-                .setAuthor("Now playing", this.channel.client.user.avatarURL)
+            return this.send(embed
                 .setDescription(`Nothing!`)
                 .setFooter(`Powered by Patch`))
         }
         const playing = Math.ceil(this.voice.dispatcher.time/1000) || 0
         const length = song.length
-        const embed = new RichEmbed()
-            .setColor(constants.STYLE.embed.color)
-            .setAuthor("Now playing", this.channel.client.user.avatarURL)
+        embed
             .setDescription(`**${song.title}**\n${formatSec(playing)} ${createTimeline(playing, length)} ${formatSec(length)}`)
             .setFooter(`Requested by ${song.requester.tag}`)
             .setThumbnail(song.thumbnail)
@@ -78,22 +77,23 @@ module.exports = class VoiceMessenger {
     }
 
     queueEnd() {
-        if(!this.channel) return;
-        this.send(`Queue ended! Give me more music!`)
+        return this.send(`Queue ended! Give me more music!`)
     }
 
     channelLeave() {
-        if(!this.channel) return;
-        this.send(`Left **${this.voice.voiceChannel.name}** channel! *${pickRandom(leaveMessages)}*`)   
+        return this.send(`Left **${this.voice.voiceChannel.name}** channel! *${pickRandom(leaveMessages)}*`)   
     }
 
     err(text) {
-        if(!this.channel) return;
-        this.send(text)
+        return this.send(text)
     }
 
     setChannel(channel) {
-        if(!channel) return false
+        if(!channel) {
+            this.channel = null
+            this.message = null
+            return null
+        }
         if(this.channel && this.channel.id === channel.id) return false
         this.channel = channel
         return this

@@ -54,15 +54,21 @@ module.exports = class Command {
             params = new Parameters(formated)
         }
 
-        const cmdScope = Object.assign({}, this, {
-            data: this.guildOptions(msg.guild),
+        /**
+         * @constant CommandUtils
+         * Utils that command gets as 3rd param
+         * @param voice Guild specific voice manager
+         * @param voiceManager Voice manager class, for static methods
+         * @param utils Utils form client.utils
+         */
+        const CommandUtils = {
             voice: msg.guild.voice,
             voiceManager: this.client.VoiceManager,
             utils: this.client.utils
-        })
+        }
 
-        cmdScope.__proto__ = this.__proto__ // very bad idea, but whatever
+        this.data = this.guildOptions(msg.guild)
 
-        return this[runAt].call(cmdScope, msg, params, msg.command)
+        return this[runAt](msg, params, CommandUtils)
     }
 }

@@ -26,7 +26,7 @@ Object.defineProperties(Discord.Message.prototype, {
             let params = null
 
             if(isCmd[2] !== undefined) {
-                params = isCmd[2].split(" ")
+                params = isCmd[2].split(/\s+/g)
             }
 
             this.type = "COMMAND"

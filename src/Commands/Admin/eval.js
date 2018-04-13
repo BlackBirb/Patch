@@ -26,7 +26,7 @@ module.exports = class Eval extends Command {
             }
         }
 
-        this.data = () => ({
+        this.initialData = () => ({
             "guildData": 0,
             "Itz test": "and it works"
         })
@@ -65,7 +65,7 @@ module.exports = class Eval extends Command {
             eval(code)
             return;
         }
-        const code = params.string
+        const code = params.toString()
         try {
             const evalved = eval(code)
             parsed = await this.parse(start, evalved)

@@ -13,7 +13,6 @@ module.exports = class VoiceManager {
         this.guild = g
         this.playing = false
         this.queue = new Queue() // etc.
-        //this.connection = null
         this.msg = new Messenger(this)
     }
 
@@ -26,9 +25,7 @@ module.exports = class VoiceManager {
         if(channel.guild.id !== this.guild.id) return Promise.reject({ code: codes.differentGuild , err: "Channel is in different guild"})
         if(channel.full) return Promise.reject({ code: codes.fullChannel , err: "Channel is full"})
         return channel.join()
-            /* eslint-disable-next-line */
-            .then(conn => { 
-                //this.connection = conn
+            .then(() => { 
                 return this
             })
             .catch(err => {
@@ -57,24 +54,20 @@ module.exports = class VoiceManager {
         return this
     }
 
-    songEnded() {
+    songEnded(reason) {
         this.playing = false
         const move = this.queue.move()
+        if(reason === 'leave') return;
         if(!move) return this.msg.queueEnd()
         this.play()
     }
 
-    leave(channel) {
-        if(this.playing) return false
-        this.playing = false
+    leave() {
+        this.queue.clear()
+        this.msg.channelLeave().then(() => this.msg.setChannel(null))
         if(this.dispatcher) this.dispatcher.end('leave')
         this.connection.disconnect()
-        this.queue.clear()
-        if(channel) channel.leave()
-        else this.voiceChannel.leave()
-        this.connection = null
-        this.msg.setChannel(null)
-        return true
+        return this
     }
 
     get dispatcher() {

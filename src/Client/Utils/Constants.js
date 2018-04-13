@@ -19,6 +19,11 @@ module.exports.STYLE = {
 module.exports.PERMISSIONS = { // ???
     "BLACKLISTED": 0x0,
     "DEFAULT": 1 << 0,
+
+    // voice
+    "FORCE": 1 << 10, 
+
+    // admin
     "EVAL": 1 << 29,
     "FULL_ADMIN": 1 << 30
 },

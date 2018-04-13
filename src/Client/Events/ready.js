@@ -11,7 +11,7 @@ module.exports = function(evn) {
     })
     console.ok("Guilds settings loaded")
     
-    if(this.config.hasOwnProperty("run")) { // REMOVE PLZ >.-.<
+    if(!this.config.hasOwnProperty("run")) { // Disable for testing only
         this.user.setActivity(...getStatus(this))
         setInterval(() => this.user.setActivity(...getStatus(this)), this.constants.statusChangeDelay)
     }

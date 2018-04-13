@@ -38,7 +38,7 @@ module.exports = class Help extends Command {
         ]
     }
 
-    async run(msg, params) {
+    async run(msg, params, { utils }) {
         if(msg.channel.type === "text" && (!msg.guild.active() || msg.channel.blacklisted)) 
             return msg.reply("I was told not to answer on this channel, so... bye.")
         const embed = new RichEmbed()
@@ -46,7 +46,7 @@ module.exports = class Help extends Command {
             .setFooter("With <3 ~Patch")
         if(!params.command) {
             embed.setTitle("Help")
-                 .setDescription(`${this.utils.pickRandom(this.noCmdDesc)} If you don't know what a command do, you can call help on it, just **add it's name after ${msg.guild.prefix}help** and I'll try my best to explain it to you.\nIf You don't know what commands there are use **${msg.guild.prefix}list** to see them all.`)
+                 .setDescription(`${utils.pickRandom(this.noCmdDesc)} If you don't know what a command do, you can call help on it, just **add it's name after ${msg.guild.prefix}help** and I'll try my best to explain it to you.\nIf You don't know what commands there are use **${msg.guild.prefix}list** to see them all.`)
         } else {
             const cmd = this.client.registry.find(params.command)
             if(cmd) {
@@ -66,7 +66,7 @@ module.exports = class Help extends Command {
             else 
                 embed.setColor(this.client.constants.STYLE.embed.colorFail)
                     .setTitle(`Command ${params.command} not found`)
-                    .setDescription(`It seems like there's no such command. ${this.utils.pickRandom(this.noCmdErr)}`)
+                    .setDescription(`It seems like there's no such command. ${utils.pickRandom(this.noCmdErr)}`)
         }
         msg.channel.send(embed)
     }

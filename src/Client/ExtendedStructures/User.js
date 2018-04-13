@@ -10,27 +10,39 @@ Object.defineProperties(Discord.User.prototype, {
     /**
      * Loads settings to cache
      */
-    updateSettings: {
+    loadSettings: {
         value: async function() {
-            let settings = await this.client.db.getUserSettings(this.id)
+            let settings = await this.client.db.getUserSettings(this.id, "user")
             if(!settings) {
                 settings = userSettings
-                this.client.db.createUserSettings(this.id)
+                this.client.db.collection("userSettings").insertOne({ id: this.id })
             }
             return this.settings = Object.assign({}, userSettings, settings)
         }
     },
+    /**
+     * Updates settings with given object
+     */
+    updateSettings: {
+        value: async function(settings) {
+            for(const key of Object.keys(settings)) {
+                this.settings[key] = settings[key]
+            }
+            return this.client.db.collection("userSettings").updateOne({ id: this.id }, { $set: settings })
+        } 
+    },
+
     /**
      * Returns or sets permissions for all guilds and global.
      */
     permissions: {
         get: async function() {
             if(this.settings.permissions) return this.settings.permissions
-            await this.updateSettings()
+            await this.loadSettings()
             return this.settings.permissions
         },
         set: async function(perms) {
-            if(!this.settings.permissions) await this.updateSettings()
+            if(!this.settings.permissions) await this.loadSettings()
             this.client.db.setUserPermissions(this.id, Object.assign(this.settings.permissions, perms))
         }
     },
@@ -112,7 +124,7 @@ Object.defineProperties(Discord.User.prototype, {
      */
     updateAccount: {
         value: async function(data) {
-            await this.client.db.updateUserAccount(this.id, data)
+            await this.client.db.collection("userAccounts").updateOne({ id: this.id }, { $set: data })
             return Object.assign(this._account, data)
         }
     }

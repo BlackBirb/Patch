@@ -3,17 +3,12 @@ const { mongoUrl, defaults  } = require("../Utils/Constants.js")
 
 class FakeManager { // for testing when i'm too lazy to start mongoDB
     logCommand() { return Promise.resolve(true) }
-    createSettings() { return Promise.resolve(true) }
     updateSettings() { return Promise.resolve(true) }
-    removeSettinngs() { return Promise.resolve(true) }
     getSettings() { return Promise.resolve(false) }
     close() { return false }
-    createUserSettings() { return Promise.resolve(true) }
-    getUserSettings() { return Promise.resolve(false) }
     getUserPermissions() { return Promise.resolve(false) }
     setUserPermissions() { return Promise.resolve(true) }
     getUserAccount(id) { return Promise.resolve(Object.assign({}, { id }, defaults.userAccount)) }
-    updateUserAccount() { return Promise.resolve(true) }
     findResponse() { return Promise.resolve(null) }
     addResponse() { return Promise.resolve(false) }
 }
@@ -101,33 +96,8 @@ class MongoManager {
         }
     }
 
-    createSettings(id) { 
-        return this.collection("guildSettings").insertOne({ id })
-    }
-
-    updateSettings(id, settings) {
-        return this.collection("guildSettings").updateOne({ id }, { $set: settings })
-    }
-
-    removeSettinngs(id) {
-        return this.collection("guildSettings").removeOne({ id })
-    }
-
-    async getSettings(id) {
-        const settings = await this.collection("guildSettings").findOne({ id })
-        if(!settings) return settings
-        delete settings.id
-        delete settings._id
-        return settings
-    }
-
-    // yea, totaly not copy paste...
-    createUserSettings(id) {
-        return this.collection("userSettings").insertOne({ id })
-    }
-
-    async getUserSettings(id) {
-        const settings = await this.collection("userSettings").findOne({ id })
+    async getSettings(id, type = "guild") {
+        const settings = await this.collection(type+"Settings").findOne({ id })
         if(!settings) return settings
         delete settings.id
         delete settings._id
@@ -138,10 +108,6 @@ class MongoManager {
         const settings = await this.collection("userSettings").findOne({ id })
         if(!settings) return null
         return settings.permisisons
-    }
-
-    async updateUserSettings(id, settings) {
-        return this.collection("userSettings").updateOne({ id }, { $set: settings })
     }
 
     async setUserPermissions(id, permissions) {
@@ -157,10 +123,6 @@ class MongoManager {
         delete acc._id
         delete acc.id
         return acc
-    }
-
-    async updateUserAccount(id, data) {
-        return await this.collection("userAccounts").updateOne({ id }, { $set: data })
     }
 
     /* eslint-disable */

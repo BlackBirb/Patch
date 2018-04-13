@@ -30,7 +30,7 @@ module.exports = async function(msg) { // fix this
     if(msg.params) {
         let subCmd = `sub${msg.params[0]}`
         if(typeof cmd[subCmd] === "function") {
-            msg.params.splice(0,1)
+            msg.params.shift()
             if(msg.params.length < 1) msg.params = null
             runAt = subCmd
         }
@@ -52,7 +52,7 @@ module.exports = async function(msg) { // fix this
     }
 
     // check permissions +
-    if(msg.author.id !== this.config.authorID) {
+    if(msg.author.id !== this.config.ownerID) {
         let user = await msg.author.permissions
         let perms = false
         if(msg.channel.type !== "text")

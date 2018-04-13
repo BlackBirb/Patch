@@ -7,7 +7,7 @@ const extend = [
     "GuildChannel",
     "User"
 ]
-const path = pathGetter(__dirname, "djsExtends")
+const path = pathGetter(__dirname, "ExtendedStructures")
 for(const name of extend) {
     require(path(name)+".js")(Discord)
 }

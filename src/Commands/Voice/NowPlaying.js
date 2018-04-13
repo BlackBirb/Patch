@@ -13,12 +13,12 @@ module.exports = class NowPlaying extends Command {
         this.requiredPermissions = "MANAGE_MESSAGES"
     }
 
-    async run(msg) {
+    async run(msg, p, { voice }) {
         msg.delete()
-        if(!this.voice.queue.active) 
+        if(!voice.queue.active) 
             return msg.channel.send("I'm not playing anything")
 
-        this.voice.msg.setChannel(msg.channel)
-        return this.voice.msg.nowPlaying()
+        voice.msg.setChannel(msg.channel)
+        return voice.msg.nowPlaying()
     }
 }

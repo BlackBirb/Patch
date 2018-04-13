@@ -101,7 +101,7 @@ module.exports = class Test extends Command {
          * 
          * @optional
          */
-        this.data = () => ({
+        this.initialData = () => ({
             "guildData": 0
         })
     }
@@ -124,12 +124,12 @@ module.exports = class Test extends Command {
     /**
      * This function will be called when user uses this command, if subcommand wasn't triggered.
      * @param {Object} msg Discord.js message expanded by bot functions.
-     * @param {Parameters} params Array-object like thing, you can get to parameters with index (all parameters that user passed are indexed) or with name if specified in this.types, only specified params can be accesed this way
-     * @param {String} cmdName Name of the command, idk why
+     * @param {Parameters} params Array-object like thing, you can get to parameters with index (all parameters that user passed are indexed) or with name if specified in this.types, only specified params can be accesed this way. Calling .toString() will return all params joined with space (" ")
+     * @param {Object} utils look at /src/Structures/Command.js before command call for more info
      */
-    async run(msg, params, cmdName) {
+    async run(msg, params, { voice, voiceManager, utils, etc }) {
         console.log(this.data)
-        //msg.reply(`Yep. Command ${this.name} works\n${this.data.guildData},  ${this.test()}`);
+        //msg.reply(`Yep. Command ${this.name} works\n${data.guildData},  ${this.test()}`);
         msg.reply("aaaa")
         this.data.guildData += 1
         

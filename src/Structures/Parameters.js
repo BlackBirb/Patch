@@ -15,7 +15,7 @@ module.exports = class Parameters extends Array {
         }
     }
 
-    get string() {
+    toString() {
         // this.join() can be overwritten if paramter is called "join"
         let str = ""
         for(const p of this) str += " "+p

@@ -34,12 +34,13 @@ module.exports = class Play extends Command {
             await message.react(this.numberReactions[0])
         }
         catch(err) {
-            //ignore
+            console.log("Nope, still breaks")
         }
+        return
     }
 
-    async pickSong(msg, query) {
-        const search = await this.voiceManager.find(query)
+    async pickSong(msg, query, voiceManager) {
+        const search = await voiceManager.find(query)
 
         const embed = new RichEmbed()
             .setTitle("This is what i found on YouTube:")
@@ -53,11 +54,11 @@ module.exports = class Play extends Command {
 
         const select = await msg.channel.send(embed)
         
-        this.addReactions(select, search.length)
+        const reactionsPromise = this.addReactions(select, search.length)
 
         const collected = await select.awaitReactions((reaction, user) => this.numberReactions.includes(reaction.emoji.name) && user.id === msg.author.id, { time: 60000, max: 1 } )
 
-        select.delete()
+        reactionsPromise.then(() => select.delete())
 
         if(collected.size < 1)
             return 0
@@ -69,12 +70,12 @@ module.exports = class Play extends Command {
         return { index, id }
     }
     
-    async run(msg, params) {
+    async run(msg, params, { voice, voiceManager }) {
         msg.delete()
-        if(!this.voice.connection) {
+        if(!voice.connection) {
             if(msg.member.voiceChannel) {
                 try {
-                    await this.voice.join(msg.member.voiceChannel)
+                    await voice.join(msg.member.voiceChannel)
                 }
                 catch(err) {
                     if(err.code){
@@ -92,13 +93,13 @@ module.exports = class Play extends Command {
         }
 
         let id = null
-        const suffix = params.string
+        const suffix = params.toString()
         if(suffix.includes("youtube.com/watch?v=")) 
             id = /(?:https:\/\/www.)?youtube.com\/watch\?v=(.+)/gi.exec(suffix)[1]
         else if(suffix.includes("youtu.be/"))
             id = /(?:https:\/\/)youtu.be\/(.+)/gi.exec(suffix)[1]
         else {
-            const pick = await this.pickSong(msg, suffix)
+            const pick = await this.pickSong(msg, suffix, voiceManager)
             if(pick.index === 0) return msg.channel.send("Ok, nevermind").then(deleteMessage)
             id = pick.id
         }
@@ -106,9 +107,9 @@ module.exports = class Play extends Command {
         if(!id) return msg.channel.send("I can't find that song..").then(deleteMessage)
 
         try {
-            const song = await this.voiceManager.songInfo(id, msg.author)
-            this.voice.msg.setChannel(msg.channel)
-            this.voice.addSong(song)
+            const song = await voiceManager.songInfo(id, msg.author)
+            voice.msg.setChannel(msg.channel)
+            voice.addSong(song)
         }
         catch(err) {
             console.error("At voice\n",err)

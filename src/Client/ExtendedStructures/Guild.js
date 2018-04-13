@@ -11,6 +11,20 @@ Object.defineProperties(Discord.Guild.prototype, {
         writable: true
     },
     /**
+     * Loads settings to guild object.
+     * No need to do it more than once, all settings change should also affect <Guild>.settings
+     */
+    "loadSettings": {
+        value: async function() {
+            let settings = await this.client.db.getSettings(this.id, "guild")
+            if(!settings) {
+                settings = guildSettings
+                this.client.db.collection("guildSettings").insertOne({ id: this.id })
+            }
+            return this.settings = Object.assign({}, guildSettings, settings)
+        }
+    },
+    /**
      * Updates one setting in guild
      * 
      * @param {Object} settings settings to change.
@@ -21,7 +35,7 @@ Object.defineProperties(Discord.Guild.prototype, {
             for(const key of Object.keys(settings)) {
                 this.settings[key] = settings[key]
             }
-            return this.client.db.updateSettings(this.id, settings)
+            return this.client.db.collection("guildSettings").updateOne({ id: this.id }, { $set: settings })
         } 
     },
     /**
@@ -30,42 +44,44 @@ Object.defineProperties(Discord.Guild.prototype, {
     "clearSettings": {
         value: async function() {
             this.settings = Object.assign({}, guildSettings)
-            await this.client.db.removeSettinngs(this.id)
-            return this.clinet.db.createSettings(this.id)
+            await this.client.db.collection("guildSettings").removeOne({ id: this.id })
+            return this.clinet.db.collection("guildSettings").insertOne({ id: this.id })
         }
     },
     /**
-     * Loads settings to guild object.
-     * No need to do it more than once, all settings change should also affect <Guild>.settings
+     * Returns a tag if exists else null
      */
-    "loadSettings": {
-        value: async function() {
-            let settings = await this.client.db.getSettings(this.id)
-            if(!settings) {
-                settings = guildSettings
-                this.client.db.createSettings(this.id, settings)
-            }
-            return this.settings = Object.assign({}, guildSettings, settings) // in case there's new setting that this guild doesn't have
-            // and it's ok if it won't be saved with new ones, that would be even better... :thonk:
-        }
-    },
     "tag": {
         value: function(name, msg) {
             let tag = this.settings.tags.hasOwnProperty(name) ? this.settings.tags[name] : null;
-            if(tag === null) return tag
+            if(!tag) return null
             return this.client.utils.transformTag(tag, msg)
         }
     },
     "tags": {
         get: function() {
-            return this.settings.tags
-        },
-        set: function(tag) {
+            return this.settings.tags || null
+        }
+    },
+    /**
+     * Adds a tag(s) to guilds settings
+     * @param {Object} tag can have multiple tags
+     * eg. {
+     *  "tag1": "response",
+     *  "moreTags": "Hello!"
+     * }
+     * @returns {Object} tags
+     */
+    "addTag": {
+        value: function(tag) {
             const tags = Object.assign(this.settings.tags, tag)
             this.updateSettings({ tags })
             return tags
         }
     },
+    /**
+     * Returns a prefix, or sets it
+     */
     "prefix": {
         get: function() {
             return this.settings.prefix
@@ -75,6 +91,11 @@ Object.defineProperties(Discord.Guild.prototype, {
             return prefix
         }
     },
+    /**
+     * Tells if guild is active, if setting is given changes (de)activates guild
+     * @param {Boolean} active Optional
+     * @returns {Boolean}
+     */
     "active": {
         value: function(setting) {
             if(setting === undefined) 
@@ -89,10 +110,10 @@ Object.defineProperties(Discord.Guild.prototype, {
         value: {},
         writable: true
     },
-    "createCmdData": { // i want it to be mutable
+    "createCmdData": {
         value: function(command) {
-            if(typeof command.data === "function")
-                return this.commandData[command.id] = Object.assign({}, command.data())
+            if(typeof command.initialData === "function")
+                return this.commandData[command.id] = Object.assign({}, command.initialData())
             return {}
         }
     }
