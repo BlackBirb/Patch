@@ -41,6 +41,9 @@ module.exports.defaults = {
         responses: true,
         voice: {
             volume: .5
+        },
+        cooldowns: { // in seconds
+            response: 10
         }
     },
     userSettings: {

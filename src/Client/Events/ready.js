@@ -5,13 +5,11 @@ module.exports = function(evn) {
     }
     
     console.loading("Getting guilds settings...")
-    this.guilds.forEach(g => {
-        g.loadSettings()
-        g.voice = new (this.VoiceManager)(g)
-    })
+    this.guilds.forEach(g => g.prepareGuild())
     console.ok("Guilds settings loaded")
     
     if(!this.config.hasOwnProperty("run")) { // Disable for testing only
+        console.log("But why")
         this.user.setActivity(...getStatus(this))
         setInterval(() => this.user.setActivity(...getStatus(this)), this.constants.statusChangeDelay)
     }

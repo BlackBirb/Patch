@@ -30,9 +30,12 @@ module.exports = class Queue {
         return this.q.length
     }
 
+    get fullQueue() {
+        if(!this.active) return []
+        return [this.active, ...this.q]
+    }
+
     get length() {
-        if(this.q.length < 1) return 0
-        if(this.q.length === 1 ) return this.q[0].length 
-        return this.q.reduce((a, b) => a.length + b.length)
+        return this.fullQueue.reduce((a, b) => a + b.length, 0)
     }
 }

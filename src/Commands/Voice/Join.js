@@ -29,6 +29,8 @@ module.exports = class Play extends Command {
     }
 
     async run(msg, params, { voice, utils }) {
+        if(msg.channel.permissions.has("MANAGE_MESSAGES"))
+            msg.delete()
         let voiceChannel = msg.member.voiceChannel
         if(!voiceChannel) {
             if(!params.name) 
@@ -52,6 +54,6 @@ module.exports = class Play extends Command {
             return msg.channel.send("Ouch, very bad error: "+err)
         }
         voice.msg.setChannel(msg.channel)
-        msg.channel.send(`Voice channel **${voiceChannel.name}** joined! *${utils.pickRandom(this.joinMessages)}*`)
+        msg.reply(`Voice channel **${voiceChannel.name}** joined! *${utils.pickRandom(this.joinMessages)}*`)
     }
 }

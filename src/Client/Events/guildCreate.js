@@ -3,8 +3,7 @@ const end = () => randEnds[Math.floor(Math.random()*randEnds.length)]
 
 module.exports = function(guild) {
     console.info(`Joined a ${guild.name}#${guild.id} Guild!`)
-    guild.loadSettings()
-    guild.voice = new (this.VoiceManager)(guild)
+    guild.prepareGuild()
     guild.fetchMember(guild.ownerID).then(owner => {
         owner.user.send({ embed: {
             color: 0x75E9FF,

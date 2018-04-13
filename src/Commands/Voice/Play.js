@@ -2,8 +2,6 @@ const { RichEmbed } = require("discord.js")
 const Command = require("../../Structures/Command.js")
 const codes = require("../../Client/Utils/Constants.js").VOICE.codes
 
-const deleteMessage = m => m.delete(30000)
-
 module.exports = class Play extends Command {
     constructor(client, id) {
         super(client, id)
@@ -14,7 +12,7 @@ module.exports = class Play extends Command {
             format: "[Youtube URL] / [Song Title]"
         }
         this.channels = ["text"]
-        this.requiredPermissions = ["ADD_REACTIONS", "MANAGE_MESSAGES"]
+        this.requiredPermissions = ["ADD_REACTIONS"]
 
         this.types = {
             song: {
@@ -70,8 +68,9 @@ module.exports = class Play extends Command {
         return { index, id }
     }
     
-    async run(msg, params, { voice, voiceManager }) {
-        msg.delete()
+    async run(msg, params, { voice, voiceManager, deleteMessage }) {
+        if(msg.channel.permissions.has("MANAGE_MESSAGES"))
+            msg.delete()
         if(!voice.connection) {
             if(msg.member.voiceChannel) {
                 try {
@@ -86,7 +85,7 @@ module.exports = class Play extends Command {
                     }
                     return msg.channel.send("Ouch, very bad error: "+err)
                 }
-                msg.channel.send(`Joined channel **${msg.member.voiceChannel.name}**!`).then(deleteMessage)
+                msg.reply(`Joined channel **${msg.member.voiceChannel.name}**!`).then(deleteMessage)
             }
             else 
                 return msg.channel.send("I'm not in voice channel, and I don't know which one should I join... AAAAAAA")
@@ -100,11 +99,11 @@ module.exports = class Play extends Command {
             id = /(?:https:\/\/)youtu.be\/(.+)/gi.exec(suffix)[1]
         else {
             const pick = await this.pickSong(msg, suffix, voiceManager)
-            if(pick.index === 0) return msg.channel.send("Ok, nevermind").then(deleteMessage)
+            if(pick.index === 0) return msg.reply("Ok, nevermind").then(deleteMessage)
             id = pick.id
         }
 
-        if(!id) return msg.channel.send("I can't find that song..").then(deleteMessage)
+        if(!id) return msg.reply("I can't find that song..").then(deleteMessage)
 
         try {
             const song = await voiceManager.songInfo(id, msg.author)
@@ -113,7 +112,7 @@ module.exports = class Play extends Command {
         }
         catch(err) {
             console.error("At voice\n",err)
-            return msg.channel.send("I can't find that song..").then(deleteMessage)
+            return msg.reply("I can't find that song..").then(deleteMessage)
         }
         
     }

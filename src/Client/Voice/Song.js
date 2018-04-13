@@ -7,7 +7,8 @@ module.exports = class Song {
         this.thumbnail = data.thumbnail
         this.requester = {
             id: req.id,
-            tag: req.tag
+            tag: req.tag,
+            icon: req.avatarURL
         }
 
         // use more of data

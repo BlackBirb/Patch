@@ -125,34 +125,6 @@ class MongoManager {
         return acc
     }
 
-    /* eslint-disable */
-    get responseStructure() {
-        let query = ["hi", "hello"]
-        let response = ["Hey!"]
-        const globalResponses = {
-            query: ["hi", "hello"],
-            responses: ["Hey!"]
-        }
-        const userResponses = {
-            "123456789": [
-                {
-                    query: ["hi", "hello"],
-                    responses: ["Hey!"]
-                }
-            ]
-        }
-        const guildResponses = {
-            id: [
-                {
-                    query: ["things"],
-                    responses: ["derp"]
-                }
-            ]
-        }
-
-        return responses
-    }
-
     async findResponse(msg, authorID, guildID) {
         const global = await this.collection("globalResponses").findOne({
             query: msg
@@ -200,7 +172,7 @@ class MongoManager {
                 { upsert: true }
             )
         }
-        if (type === "user" || type === "global") {
+        if (type === "user" || type === "guild") {
             if(await this.collection(type+"Responses").findOne({ [id]: { $exists : true } }))
                 return this.collection(type + "Responses").updateOne(
                     {

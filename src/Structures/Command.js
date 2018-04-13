@@ -60,11 +60,13 @@ module.exports = class Command {
          * @param voice Guild specific voice manager
          * @param voiceManager Voice manager class, for static methods
          * @param utils Utils form client.utils
+         * @param deleteMessage ment to be added to .then() it will delete message after 30s
          */
         const CommandUtils = {
             voice: msg.guild.voice,
             voiceManager: this.client.VoiceManager,
-            utils: this.client.utils
+            utils: this.client.utils,
+            deleteMessage: m => m.delete(30000)
         }
 
         this.data = this.guildOptions(msg.guild)

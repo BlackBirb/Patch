@@ -12,7 +12,7 @@ Object.defineProperties(Discord.User.prototype, {
      */
     loadSettings: {
         value: async function() {
-            let settings = await this.client.db.getUserSettings(this.id, "user")
+            let settings = await this.client.db.getSettings(this.id, "user")
             if(!settings) {
                 settings = userSettings
                 this.client.db.collection("userSettings").insertOne({ id: this.id })

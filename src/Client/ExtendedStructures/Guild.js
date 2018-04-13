@@ -10,6 +10,14 @@ Object.defineProperties(Discord.Guild.prototype, {
         value: undefined,
         writable: true
     },
+
+    "prepareGuild": {
+        value: function() {
+            this.voice = new (this.client.VoiceManager)(this)
+            this._cooldowns = new Map()
+            this.loadSettings()
+        }
+    },
     /**
      * Loads settings to guild object.
      * No need to do it more than once, all settings change should also affect <Guild>.settings
@@ -115,6 +123,30 @@ Object.defineProperties(Discord.Guild.prototype, {
             if(typeof command.initialData === "function")
                 return this.commandData[command.id] = Object.assign({}, command.initialData())
             return {}
+        }
+    },
+    "_cooldowns": {
+        value: undefined, //new Map("response" => timestamp),
+        writable: true
+    },
+    /**
+     * Rn for responses only
+     * 
+     * returns Boolean meaning if it's on cooldown (true) or not (false)
+     */
+    "cooldowns": {
+        value: function(on){
+            if(this._cooldowns.has(on) && this.settings.cooldowns.hasOwnProperty(on)) {
+                return this._cooldowns.get(on) + this.settings.cooldowns[on]*1000 > Date.now()
+            }
+            return false
+        }
+    },
+    "setCooldown": {
+        value: function(on) {
+            const timestamp = Date.now()
+            this._cooldowns.set(on, timestamp)
+            return timestamp
         }
     }
 })

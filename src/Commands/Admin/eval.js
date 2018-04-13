@@ -55,8 +55,8 @@ module.exports = class Eval extends Command {
         return `*Executed in ${Date.now() - start}ms*\n\`\`\`js\n${this.clear(res)}\`\`\``
     }
     
-    async run(msg, params) {
-        // eslint-disable-next-line no-unused-vars
+    /* eslint-disable no-unused-vars */
+    async run(msg, params, t) {
         const { client, client: { constants } } = this // for eval scope
         const start = Date.now()
         let parsed = null;
