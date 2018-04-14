@@ -62,11 +62,11 @@ module.exports = class VoiceManager {
         this.play()
     }
 
-    leave() {
+    async leave() {
         this.queue.clear()
-        this.msg.channelLeave().then(() => this.msg.setChannel(null))
         if(this.dispatcher) this.dispatcher.end('leave')
         this.connection.disconnect()
+        await this.msg.channelLeave().then(() => this.msg.setChannel(null))
         return this
     }
 

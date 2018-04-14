@@ -1,0 +1,11 @@
+{
+    "OP": {
+        "dispatch": 0,
+        "hello": 1,
+        "identify": 2,
+        "heartbeat": 10,
+        "heartbeatACK": 11,
+        "invalidMsg": 4000
+    },
+    "heartbeatInterval": 30000
+}

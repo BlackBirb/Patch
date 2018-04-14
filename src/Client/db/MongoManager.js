@@ -2,6 +2,10 @@ const MongoClient = require('mongodb').MongoClient;
 const { mongoUrl, defaults  } = require("../Utils/Constants.js")
 
 class FakeManager { // for testing when i'm too lazy to start mongoDB
+    destroy() { return Promise.resolve(true)}
+    collection() { return {
+        insertOne() { return Promise.resolve(false) }
+    } }
     logCommand() { return Promise.resolve(true) }
     updateSettings() { return Promise.resolve(true) }
     getSettings() { return Promise.resolve(false) }
@@ -52,6 +56,10 @@ class MongoManager {
                 collection: "guild"
             }
         }
+    }
+
+    destroy() {
+        return this.db.close()
     }
 
     collection(name) {

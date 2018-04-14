@@ -3,7 +3,7 @@ module.exports = {
     failCommand: "415912144308273152",
     LOGGER_SPACING: 75,
     mongoUrl: "mongodb://localhost:27017/",
-    asyncServices: ["Commands","MongoDB", "DiscordJS"], // API in future
+    asyncServices: ["Commands","MongoDB", "DiscordJS", "Web"],
     statusChangeDelay: 600000, // 5 min,
     inviteLink: "https://discordapp.com/oauth2/authorize?client_id=207051061213528064&scope=bot&permissions=104188992",
     webURL: "https://soon.lol/"

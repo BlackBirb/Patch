@@ -6,7 +6,7 @@ const CommandRegistry = require("./Client/Registry/Manager.js")
 const dbManager = require("./Client/db/MongoManager.js")
 
 module.exports = class Bot extends Discord.Client {
-    constructor(config) {
+    constructor(config, WebInterface) {
         super(config.clientSettings)
         this.config = config
         this.utils = utils
@@ -24,6 +24,12 @@ module.exports = class Bot extends Discord.Client {
         this.registry = new CommandRegistry(this)
 
         this.registry.fetch().then(() => this.emit("readyCommands")) // maybe tey will take some tile to load? I doubt it but still.
+
+        if(!config.run.web || typeof WebInterface !== 'function') 
+            this.webInterface = null
+        else 
+            this.webInterface = new WebInterface(this)
+        this.emit("readyWeb")
 
         if (config.run.discord) {
             this.login(config.token)
@@ -77,5 +83,19 @@ module.exports = class Bot extends Discord.Client {
     openCLI() {
         const cli = require("./cli.js")
         cli.open(cli.createScope(this))
+    }
+
+    async terminate() {
+        console.loading("Disconnecting from voice")
+        await Promise.all(this.guilds.filter(g => !!g.voice.connection).map(g => g.voice.leave()))
+        console.loading("Closing connection with MongoDB")
+        await this.db.destroy()
+        if(this.webInterface) {
+            console.loading("Terminating Web app")
+            await this.webInterface.terminate()
+        }
+        console.loading("Destroying client")
+        await this.destroy()
+        return true
     }
 }

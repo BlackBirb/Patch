@@ -6,7 +6,7 @@ module.exports = class NowPlaying extends Command {
 
         this.name = "queue"
         this.help = {
-            desc: "Sends the song queue!",
+            desc: "Sends the song queue! If you use alias `!next` or give it parameter `next` it shows only next song",
             format: " / next"
         }
         this.aliases = ["songs", "next"]
