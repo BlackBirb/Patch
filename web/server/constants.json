@@ -1,4 +1,6 @@
 {
+    "port": 443,
+    "useSSL": true,
     "OP": {
         "dispatch": 0,
         "hello": 1,

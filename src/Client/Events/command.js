@@ -4,7 +4,7 @@ const messages = {
     noPerm: ["Sorry but I'm not going to listen to you."]
 }
 
-module.exports = async function(msg) { // fix this
+module.exports = function(msg) { // fix this
     const cmd = this.registry.find(msg.command)
 
     if(msg.channel.type === "text" && cmd && !cmd.ignoreBlacklist) {
@@ -16,7 +16,7 @@ module.exports = async function(msg) { // fix this
         if(msg.channel.type === "text") {
             let tag = msg.guild.tag(msg.command, msg)
             if(tag === null) 
-                tag = await msg.author.account.then(a => a.tags[msg.command]) || null //bug
+                tag = msg.author.account.tags[msg.command] || null //bug
 
             if(tag !== null) 
                 return msg.channel.send(tag)
@@ -53,19 +53,13 @@ module.exports = async function(msg) { // fix this
 
     // check permissions +
     if(msg.author.id !== this.config.ownerID) {
-        let user = await msg.author.permissions
-        let perms = false
+        let perms = true
         if(msg.channel.type !== "text")
-            perms = user["GLOBAL"]
-        else if(user.hasOwnProperty(msg.guild.id))
-            perms = user[msg.guild.id]
+            perms = msg.author.hasCmdPermission(cmd.permissions)
         else
-            perms = msg.guild.settings.defaultPermissions
-
-        if(perms !== this.constants.PERMISSIONS.FULL_ADMIN) {
-            if((perms & cmd.permissions) !== cmd.permissions) 
-                return msg.reply(this.utils.pickRandom(messages.noPerm))
-        }
+            perms = msg.member.hasCmdPermission(cmd.permissions)
+        if(!perms)
+            return msg.reply(this.utils.pickRandom(messages.noPerm))
     }
 
     cmd.process(msg, runAt)

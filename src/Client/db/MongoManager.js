@@ -20,12 +20,6 @@ class FakeManager { // for testing when i'm too lazy to start mongoDB
 class MongoManager {
     constructor(db) {
         this.db = db
-        /**
-         *  shortName: {
-         *      db: "db name",
-         *      collection: "collection name"
-         *  }
-         */
         this.collections = {
             "cmdLogs": {
                 db: "logs",
@@ -105,32 +99,37 @@ class MongoManager {
     }
 
     async getSettings(id, type = "guild") {
-        const settings = await this.collection(type+"Settings").findOne({ id })
-        if(!settings) return settings
-        delete settings.id
-        delete settings._id
-        return settings
-    }
-
-    async getUserPermissions(id) {
-        const settings = await this.collection("userSettings").findOne({ id })
-        if(!settings) return null
-        return settings.permisisons
+        return this.collection(type+"Settings").findOne({ id }).then(settings => {
+            if(!settings) return null
+            delete settings.id
+            delete settings._id
+            return settings
+        })
     }
 
     async setUserPermissions(id, permissions) {
         return this.collection("userSettings").updateOne({ id }, { $set: { permissions } })
     }
 
+    async setMemberPermissions(id, guildID, permissions) {
+        return this.collection("userSettings").updateOne({ id }, { $set: {
+            guildPermissions: {
+                [guildID]: permissions
+            }
+        }})
+    }
+
     async getUserAccount(id) {
-        let acc = await this.collection("userAccounts").findOne({ id })
-        if(!acc) {
-            acc = { id, currency: 0 }
-            await this.collection("userAccounts").insertOne(acc)
-        }
-        delete acc._id
-        delete acc.id
-        return acc
+        this.collection("userAccounts").findOne({ id }).then(acc => {
+            if(!acc) {
+                acc = { id, currency: 0 }
+                this.collection("userAccounts").insertOne(acc)
+                return { currency: 0 }
+            }
+            delete acc._id
+            delete acc.id
+            return acc
+        })
     }
 
     async findResponse(msg, authorID, guildID) {

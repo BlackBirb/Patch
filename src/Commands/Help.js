@@ -15,7 +15,6 @@ module.exports = class Help extends Command {
             ]
         }
         this.aliases = ["halp"]
-        this.permissions = 0x10 // define them later
         this.ignoreBlacklist = true
         this.channels = ["text", "dm"]
 

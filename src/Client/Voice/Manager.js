@@ -64,10 +64,10 @@ module.exports = class VoiceManager {
 
     async leave() {
         this.queue.clear()
+        const wait = this.msg.channelLeave().then(() => this.msg.setChannel(null))
         if(this.dispatcher) this.dispatcher.end('leave')
         this.connection.disconnect()
-        await this.msg.channelLeave().then(() => this.msg.setChannel(null))
-        return this
+        return wait
     }
 
     get dispatcher() {

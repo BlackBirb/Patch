@@ -47,9 +47,8 @@ module.exports.defaults = {
         }
     },
     userSettings: {
-        permissions: {
-            "GLOBAL": 0x1
-        }
+        permissions: 0x1,
+        guildPermissions: {}
     },
     userAccount: {
         currency: 0,

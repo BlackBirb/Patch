@@ -2,9 +2,10 @@ const Discord = require("discord.js")
 const { pathGetter } = require("./Utils/main.js")
 require("./Utils/Logger.js");
 const extend = [
-    "Message",
     "Guild",
     "GuildChannel",
+    "GuildMember",
+    "Message",
     "User"
 ]
 const path = pathGetter(__dirname, "ExtendedStructures")

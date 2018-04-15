@@ -36,13 +36,14 @@ Object.defineProperties(Discord.Message.prototype, {
         }
     },
     "checkIfResponse": {
-        value: async function() {
-            let res = await this.client.db.findResponse(this.content, this.author.id, this.guild && this.guild.id)
-            if(res) {
-                this.type = "RESPONSE"
-                this.responses = res
-            }
-            return this
+        value: function() {
+            return this.client.db.findResponse(this.content, this.author.id, this.guild && this.guild.id).then(res => {
+                if(res) {
+                    this.type = "RESPONSE"
+                    this.responses = res
+                }
+                return this
+            })
         }
     },
     "prefix": {

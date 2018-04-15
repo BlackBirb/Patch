@@ -25,11 +25,13 @@ module.exports = class Bot extends Discord.Client {
 
         this.registry.fetch().then(() => this.emit("readyCommands")) // maybe tey will take some tile to load? I doubt it but still.
 
-        if(!config.run.web || typeof WebInterface !== 'function') 
+        if(!config.run.web || typeof WebInterface !== 'function') {
             this.webInterface = null
-        else 
+            this.emit("readyWeb")
+        } else {
             this.webInterface = new WebInterface(this)
-        this.emit("readyWeb")
+            this.webInterface.init().then(() => this.emit("readyWeb"))
+        }
 
         if (config.run.discord) {
             this.login(config.token)
