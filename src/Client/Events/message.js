@@ -9,8 +9,13 @@ module.exports = function(msg) {
         const promises = [] // load all user data
         if(!msg.author.settings) promises.push(msg.author.loadSettings())
         if(!msg.author._account) promises.push(msg.author.loadAccount())
-        if(promises.length > 0) 
-            return Promise.all(promises).then(() => this.emit("command", cmd))
+        if(promises.length > 0) {
+            msg.channel.startTyping()
+            return Promise.all(promises).then(() => {
+                msg.channel.stopTyping(true)
+                this.emit("command", cmd)
+            })
+        }
         return this.emit("command", cmd)
     }
 

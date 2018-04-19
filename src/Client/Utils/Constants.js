@@ -67,5 +67,7 @@ module.exports.VOICE = {
         differentGuild: 1,
         fullChannel: 2
     },
-    ytdlOptions: { filter : 'audioonly' }
+    ytdlOptions: { filter : 'audioonly' },
+    pickTime: 30000,
+    autoLeave: 60000 // should be bigger than pick time.
 }

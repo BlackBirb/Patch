@@ -4,9 +4,7 @@ const config = require("./config.json")
 
 const client = new Bot(config, Web);
 
-process.on("unhandledRejection", err => {
-    console.log(`Unhandled rejection`, err)
-});
+
 process.on('SIGINT', () => {
     console.warn("Terminating Services...");
     client.terminate().then(() => {
@@ -18,3 +16,17 @@ process.on('SIGINT', () => {
         process.exit(0)
     })
 });
+process.on("unhandledRejection", err => {
+    console.log(`Unhandled rejection`, err)
+});
+if(config.run.memwatch) {
+    const memwatch = require("memwatch")
+    memwatch.on("leak", info => {
+        console.warn("Memory leak detected")
+        console.dir(info)
+    })
+    memwatch.on("stats", stats => {
+        console.info("MemWatch stats:")
+        console.log(stats)
+    })
+}

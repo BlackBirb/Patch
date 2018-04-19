@@ -6,7 +6,7 @@ const createTimeline = (pos, max) => {
     const amount = Math.ceil(pos/max*25)
     if(amount < 25) 
         return `[${"■".repeat(amount)}${"-".repeat(25-amount)}]`
-    return `[${"■".repeat(25)}]`
+    return `${"■".repeat(25)}`
 }
 
 const leaveMessages = [
@@ -79,7 +79,7 @@ module.exports = class VoiceMessenger {
         const length = song.length
         embed
             .setAuthor("Now playing", song.requester.icon)
-            .setDescription(`**[${song.title}](${song.url})**\n${formatSec(playing)} ${createTimeline(playing, length)} ${formatSec(length)}`)
+            .setDescription(`**[${song.title}](${song.url})**\n${formatSec(playing)} \`${createTimeline(playing, length)}\` ${formatSec(length)}`)
             .setFooter(`Requested by ${song.requester.tag}`)
             .setThumbnail(song.thumbnail)
         return this.send(embed)
@@ -125,7 +125,7 @@ module.exports = class VoiceMessenger {
     }
 
     channelLeave() {
-        return this.send(`Left **${this.voice.voiceChannel.name}** channel! *${pickRandom(leaveMessages)}*`)   
+        return this.send(`Left **${this.voice.voiceChannel.name}** channel! *${pickRandom(leaveMessages)}*`)
     }
 
     err(text) {

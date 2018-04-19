@@ -1,4 +1,4 @@
-const { failCommand } = require("../Utils/Constants.js")
+const { failCommand, PERMISSIONS } = require("../Utils/Constants.js")
 
 const messages = {
     noPerm: ["Sorry but I'm not going to listen to you."]
@@ -6,6 +6,8 @@ const messages = {
 
 module.exports = function(msg) { // fix this
     const cmd = this.registry.find(msg.command)
+
+    if(msg.author.permissions === PERMISSIONS.BLACKLISTED) return; // ignore blacklisted people
 
     if(msg.channel.type === "text" && cmd && !cmd.ignoreBlacklist) {
         if(!msg.guild.settings.active) return;

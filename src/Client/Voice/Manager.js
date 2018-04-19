@@ -14,6 +14,25 @@ module.exports = class VoiceManager {
         this.playing = false
         this.queue = new Queue() // etc.
         this.msg = new Messenger(this)
+        this.autoLeave = {
+            _timeout: null,
+            Timeout: () => {
+                if(this.playing) return;
+                if(this.connection)
+                    this.leave()
+            },
+            start: function () {
+                this._timeout === null 
+                    && (this._timeout = setTimeout(this.Timeout, constants.autoLeave))
+            },
+            stop: function () { 
+                if(this._timeout !== null) {
+                    clearTimeout(this._timeout)
+                    this._timeout = null
+                }
+            }
+        }
+        Object.defineProperty(this.autoLeave, "active", { get: function() { return this._timeout !== null } })
     }
 
     get connection() {
@@ -26,6 +45,7 @@ module.exports = class VoiceManager {
         if(channel.full) return Promise.reject({ code: codes.fullChannel , err: "Channel is full"})
         return channel.join()
             .then(() => { 
+                this.autoLeave.start()
                 return this
             })
             .catch(err => {
@@ -37,12 +57,13 @@ module.exports = class VoiceManager {
     addSong(song) {
         this.queue.add(song)
         if(this.playing) return this.msg.enqueued(song)
+        if(this.autoLeave.active) this.autoLeave.stop()
         this.queue.move()
         return this.play()
     }
 
     play() {
-        if(!this.connection) return this.msg.err("I'm... not connected? What?")
+        if(!this.connection) return this.msg.err("Emm, I think you were too slow and I left... Sorry '^^")
         if(!this.queue.now) return this.msg.err("No more songs to play!")
 
         const stream = ytdl(this.queue.now, constants.ytdlOptions)
@@ -58,7 +79,10 @@ module.exports = class VoiceManager {
         this.playing = false
         const move = this.queue.move()
         if(reason === 'leave') return;
-        if(!move) return this.msg.queueEnd()
+        if(!move) {
+            this.autoLeave.start()
+            return this.msg.queueEnd()
+        }
         this.play()
     }
 
@@ -66,6 +90,7 @@ module.exports = class VoiceManager {
         this.queue.clear()
         const wait = this.msg.channelLeave().then(() => this.msg.setChannel(null))
         if(this.dispatcher) this.dispatcher.end('leave')
+        if(this.autoLeave.active) this.autoLeave.stop()
         this.connection.disconnect()
         return wait
     }

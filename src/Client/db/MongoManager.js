@@ -101,8 +101,9 @@ class MongoManager {
     async getSettings(id, type = "guild") {
         return this.collection(type+"Settings").findOne({ id }).then(settings => {
             if(!settings) return null
-            delete settings.id
-            delete settings._id
+            // holey object are bad objects
+            // delete settings.id
+            // delete settings._id
             return settings
         })
     }
@@ -126,8 +127,8 @@ class MongoManager {
                 this.collection("userAccounts").insertOne(acc)
                 return { currency: 0 }
             }
-            delete acc._id
-            delete acc.id
+            // delete acc._id
+            // delete acc.id
             return acc
         })
     }

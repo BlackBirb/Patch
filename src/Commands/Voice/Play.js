@@ -1,6 +1,7 @@
 const { RichEmbed } = require("discord.js")
 const Command = require("../../Structures/Command.js")
-const codes = require("../../Client/Utils/Constants.js").VOICE.codes
+const constants = require("../../Client/Utils/Constants.js").VOICE
+const codes = constants.codes
 
 module.exports = class Play extends Command {
     constructor(client, id) {
@@ -42,7 +43,7 @@ module.exports = class Play extends Command {
 
         const embed = new RichEmbed()
             .setTitle("This is what i found on YouTube:")
-            .setDescription("Pick song using reaction! You have 60s!")
+            .setDescription(`Pick song using reaction! You have ${constants.pickTime/1000}s!`)
             .setFooter("Powered by Patch", this.client.user.avatarURL)
 
         for(let i=0; i<search.length;i++) {
@@ -54,7 +55,7 @@ module.exports = class Play extends Command {
         
         const reactionsPromise = this.addReactions(select, search.length)
 
-        const collected = await select.awaitReactions((reaction, user) => this.numberReactions.includes(reaction.emoji.name) && user.id === msg.author.id, { time: 60000, max: 1 } )
+        const collected = await select.awaitReactions((reaction, user) => this.numberReactions.includes(reaction.emoji.name) && user.id === msg.author.id, { time: constants.pickTime, max: 1 } )
 
         reactionsPromise.then(() => select.delete())
 

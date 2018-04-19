@@ -95,6 +95,8 @@ Object.defineProperties(Discord.Guild.prototype, {
             return this.settings.prefix
         },
         set: function(prefix) {
+            // eslint-disable-next-line no-useless-escape
+            prefix = prefix.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") 
             this.updateSettings({ prefix })
             return prefix
         }

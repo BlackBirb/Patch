@@ -89,7 +89,7 @@ module.exports = class Bot extends Discord.Client {
 
     async terminate() {
         console.loading("Disconnecting from voice")
-        await Promise.all(this.guilds.filter(g => !!g.voice.connection).map(g => g.voice.leave()))
+        await Promise.all(this.guilds.filter(g => g.voice && !!g.voice.connection).map(g => g.voice.leave()))
         console.loading("Closing connection with MongoDB")
         await this.db.destroy()
         if(this.webInterface) {
