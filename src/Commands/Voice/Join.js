@@ -1,7 +1,7 @@
 const Command = require("../../Structures/Command.js")
 const codes = require("../../Client/Utils/Constants.js").VOICE.codes
 
-module.exports = class Play extends Command {
+module.exports = class Join extends Command {
     constructor(client, id) {
         super(client, id)
 
@@ -28,9 +28,12 @@ module.exports = class Play extends Command {
         ]
     }
 
-    async run(msg, params, { voice, utils }) {
+    inhibitor(msg) {
         if(msg.channel.permissions.has("MANAGE_MESSAGES"))
             msg.delete()
+    }
+
+    async run(msg, params, { voice, utils, deleteMessage }) {
         let voiceChannel = msg.member.voiceChannel
         if(!voiceChannel) {
             if(!params.name) 
@@ -40,6 +43,8 @@ module.exports = class Play extends Command {
             if(!voiceChannel)
                 return msg.channel.send("I can't find that channel, sorry.")
         }
+
+        if(voiceChannel.id === voice.player.channel) return msg.reply(`I'm already on this channel!`).then(deleteMessage)
 
         try {
             await voice.join(voiceChannel)

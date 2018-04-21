@@ -1,6 +1,6 @@
 const Command = require("../../Structures/Command.js")
 
-module.exports = class Play extends Command {
+module.exports = class Leave extends Command {
     constructor(client, id) {
         super(client, id)
 
@@ -17,10 +17,13 @@ module.exports = class Play extends Command {
 
     }
 
-    async run(msg, params, { voice, deleteMessage }) {
+    inhibitor(msg) {
         if(msg.channel.permissions.has("MANAGE_MESSAGES"))
             msg.delete()
-        if(!voice.connection) 
+    }
+
+    async run(msg, params, { voice, deleteMessage }) {
+        if(!voice.player) 
             return msg.channel.send("I'm not in voice channel!")
 
         if(params.force && !(msg.author.id === msg.guild.ownerID || await msg.author.hasPermission(this.client.constants.PERMISSIONS.FORCE, msg.guild))) 

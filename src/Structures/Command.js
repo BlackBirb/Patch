@@ -66,10 +66,16 @@ module.exports = class Command {
             voice: msg.guild.voice,
             voiceManager: this.client.VoiceManager,
             utils: this.client.utils,
-            deleteMessage: m => m.delete(30000)
+            deleteMessage: m => m.delete({ timeout: 30000 })
         }
 
         this.data = this.guildOptions(msg.guild)
+
+        if(typeof this.inhibitor === "function") {
+            const passed = this.inhibitor(msg, params, CommandUtils)
+            if(passed === false) // i wan't only false not all falsy values
+                return;
+        }
 
         return this[runAt](msg, params, CommandUtils)
     }

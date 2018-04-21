@@ -37,9 +37,14 @@ module.exports = class Help extends Command {
         ]
     }
 
+    inhibitor(msg) {
+        if(msg.channel.type === "text" && (!msg.guild.active() || msg.channel.blacklisted)) {
+            msg.reply("I was told not to answer on this channel, so... bye.")
+            return false
+        }
+    }
+
     async run(msg, params, { utils }) {
-        if(msg.channel.type === "text" && (!msg.guild.active() || msg.channel.blacklisted)) 
-            return msg.reply("I was told not to answer on this channel, so... bye.")
         const embed = new RichEmbed()
             .setColor(this.client.constants.STYLE.embed.color)
             .setFooter("With <3 ~Patch")

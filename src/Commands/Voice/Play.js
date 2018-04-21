@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js")
+const { MessageEmbed } = require("discord.js")
 const Command = require("../../Structures/Command.js")
 const constants = require("../../Client/Utils/Constants.js").VOICE
 const codes = constants.codes
@@ -41,7 +41,7 @@ module.exports = class Play extends Command {
     async pickSong(msg, query, voiceManager) {
         const search = await voiceManager.find(query)
 
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setTitle("This is what i found on YouTube:")
             .setDescription(`Pick song using reaction! You have ${constants.pickTime/1000}s!`)
             .setFooter("Powered by Patch", this.client.user.avatarURL)
@@ -68,11 +68,14 @@ module.exports = class Play extends Command {
         if(index > 0) id = search[index-1].id
         return { index, id }
     }
-    
-    async run(msg, params, { voice, voiceManager, deleteMessage }) {
+
+    inhibitor(msg) {
         if(msg.channel.permissions.has("MANAGE_MESSAGES"))
             msg.delete()
-        if(!voice.connection) {
+    }
+    
+    async run(msg, params, { voice, voiceManager, deleteMessage }) {
+        if(!voice.player) {
             if(msg.member.voiceChannel) {
                 try {
                     await voice.join(msg.member.voiceChannel)

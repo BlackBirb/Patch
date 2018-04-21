@@ -1,6 +1,7 @@
 module.exports = class Song {
-    constructor(data, req) {
+    constructor(data, req, track) {
         this.id = data.id
+        this.track = track
         this.title = data.title
         this.length = parseInt(data.length)
         this.views = data.views

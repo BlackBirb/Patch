@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js")
+const { MessageEmbed } = require("discord.js")
 const constants = require("../Utils/Constants.js")
 const { formatSec, pickRandom } = require("../Utils/Main.js")
 
@@ -34,9 +34,10 @@ module.exports = class VoiceMessenger {
         return this.message
     }
 
-    reset() {
+    reset(next = true) {
         if(this.timeout) 
             clearTimeout(this.timeout)
+        if(!next) return
         this.timeout = setTimeout(() => {
             this.nowPlaying()
             this.timeout = null
@@ -44,7 +45,7 @@ module.exports = class VoiceMessenger {
     }
 
     enqueued(song) {
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
             .setAuthor("Enqueued", song.requester.icon)
             .setDescription(`**[${song.title}](${song.url})** \n*Length: ${formatSec(song.length)}*\n*Queue size: ${this.voice.queue.size} | Queue length: ${formatSec(this.voice.queue.length)}*`)
@@ -55,7 +56,7 @@ module.exports = class VoiceMessenger {
     }
 
     nextSong(song) {
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
             .setAuthor("Now playing", song.requester.icon)
             .setDescription(`**[${song.title}](${song.url})** \n*Length: ${formatSec(song.length)}*`)
@@ -67,7 +68,7 @@ module.exports = class VoiceMessenger {
     nowPlaying() {
         if(!this.channel) return;
         const song = this.voice.queue.active
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
             .setAuthor("Now playing", this.channel.client.user.avatarURL)
         if(!song) {
@@ -75,20 +76,38 @@ module.exports = class VoiceMessenger {
                 .setDescription(`Nothing!`)
                 .setFooter(`Powered by Patch`))
         }
-        const playing = Math.ceil(this.voice.dispatcher.time/1000) || 0
+        const playing = Math.floor(this.voice.player.state.position/1000) || 0
         const length = song.length
         embed
             .setAuthor("Now playing", song.requester.icon)
             .setDescription(`**[${song.title}](${song.url})**\n${formatSec(playing)} \`${createTimeline(playing, length)}\` ${formatSec(length)}`)
             .setFooter(`Requested by ${song.requester.tag}`)
             .setThumbnail(song.thumbnail)
+        this.reset(false)
         return this.send(embed)
     }
 
+    queue() {
+        if(!this.voice.queue.active) return;
+        const queue = this.voice.queue.q.slice(0, 4)
+        const now = this.voice.queue.active
+        const embed = new MessageEmbed()
+            .setColor(constants.STYLE.embed.color)
+            .setAuthor("Full Queue", this.channel.client.user.avatarURL)
+            .setDescription(`Queue size: ${this.voice.queue.size} | Length: ${formatSec(this.voice.queue.length)}\nNow playing:\n**[${now.title}](${now.url})** requested by: *${now.requester.tag}*`) 
+            .setFooter(`Powered by Patch`)
+        queue.forEach((song, i) => {
+            embed.addField(`#${i+1}`, `**[${song.title}](${song.url})** (${formatSec(song.length)})\n*requested by ${song.requester.tag}*`)
+        })
+        if(this.voice.queue.q.length > 4) embed.addField("And more...", '\u200B')
+        this.reset()
+        this.send(embed)
+    }
+    
     nextInQueue() {
         if(!this.channel) return;
         const song = this.voice.queue.q[0]
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
             .setAuthor("Next in Queue", this.channel.client.user.avatarURL)
         if(!song)
@@ -103,25 +122,43 @@ module.exports = class VoiceMessenger {
         return this.send(embed)
     }
 
-    queue() {
-        if(!this.voice.queue.active) return;
-        const queue = this.voice.queue.q.slice(0, 4)
-        const now = this.voice.queue.active
-        const embed = new RichEmbed()
-            .setColor(constants.STYLE.embed.color)
-            .setAuthor("Full Queue", this.channel.client.user.avatarURL)
-            .setDescription(`Queue size: ${this.voice.queue.size} | Length: ${formatSec(this.voice.queue.length)}\nNow playing:\n**[${now.title}](${now.url})** requested by: *${now.requester.tag}*`) 
-            .setFooter(`Powered by Patch`)
-        queue.forEach((song, i) => {
-            embed.addField(`#${i+1}`, `**[${song.title}](${song.url})** (${formatSec(song.length)})\n*requested by ${song.requester.tag}*`)
-        })
-        if(this.voice.queue.q.length > 4) embed.addField("And more...", '\u200B')
-        this.reset()
-        this.send(embed)
-    }
-
     queueEnd() {
         return this.send(`Queue ended! Give me more music!`)
+    }
+
+    history() {
+        const history = this.voice.history
+        const embed = new MessageEmbed()
+            .setColor(constants.STYLE.embed.color)
+            .setAuthor("Playing history", this.voice.guild.client.user.avatarURL)
+        if(history.length === 0)
+            embed.setDescription("I just started playing!")
+                .setFooter("Powered by Patch")
+        else {
+            embed.setDescription(`Last ${history.length} song${history.length > 1 && "s"} I played:`)
+            history.his.forEach((song, i) => 
+                embed.addField(`#${i+1}`, `**[${song.title}](${song.url})**\n*requested by ${song.requester.tag}*`))
+        }
+        
+        this.reset()
+        return this.send(embed)
+    }
+
+    lastPlayed() {
+        if(!this.channel) return;
+        const song = this.voice.history.last
+        const embed = new MessageEmbed()
+            .setColor(constants.STYLE.embed.color)
+            .setAuthor("Song that just played", this.channel.client.user.avatarURL)
+        if(!song)
+            embed.setDescription("Nothing... I just started playing")
+                .setFooter("Powered by Patch")
+        else 
+            embed.setDescription(`**[${song.title}](${song.url})** \n*Length: ${formatSec(song.length)}*`)
+                .setFooter(`Requested by ${song.requester.tag}`)
+                .setThumbnail(song.thumbnail)
+        this.reset()
+        return this.send(embed)
     }
 
     channelLeave() {

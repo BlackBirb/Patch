@@ -18,5 +18,11 @@ yarn-error.log*
 todo.md*
 config.json*
 yarn.lock*
+application.yml*
+
 run*
 playingStatus*
+Lavalink*
+logs*
+
+OldVoice*

@@ -12,11 +12,17 @@ module.exports = class NowPlaying extends Command {
         this.channels = ["text"]
     }
 
-    async run(msg, p, { voice }) {
+    inhibitor(msg, p, { voice, deleteMessage }) {
         if(msg.channel.permissions.has("MANAGE_MESSAGES"))
             msg.delete()
-        if(!voice.queue.active) 
-            return msg.channel.send("I'm not playing anything")
+        
+        if(!voice.queue.active) {
+            msg.reply("I'm not playing anything").then(deleteMessage)
+            return false
+        }
+    }
+
+    async run(msg, p, { voice }) {
 
         voice.msg.setChannel(msg.channel)
         return voice.msg.nowPlaying()

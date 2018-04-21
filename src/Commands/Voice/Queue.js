@@ -1,6 +1,6 @@
 const Command = require("../../Structures/Command.js")
 
-module.exports = class NowPlaying extends Command {
+module.exports = class Queue extends Command {
     constructor(client, id) {
         super(client, id)
 
@@ -13,24 +13,24 @@ module.exports = class NowPlaying extends Command {
         this.channels = ["text"]
     }
 
-    subnext(msg, p, { voice, deleteMessage }) {
+    inhibitor(msg, p, { voice, deleteMessage }) {
         if(msg.channel.permissions.has("MANAGE_MESSAGES"))
             msg.delete()
-        if(!voice.queue.active) 
-            return msg.channel.send("I'm not playing anything").then(deleteMessage)
+        
+        if(!voice.queue.active) {
+            msg.reply("I'm not playing anything").then(deleteMessage)
+            return false
+        }
         
         voice.msg.setChannel(msg.channel)
+    }
+
+    subnext(msg, p, { voice }) {
         return voice.msg.nextInQueue()
     }
 
-    async run(msg, p, { voice, deleteMessage }) {
-        if(msg.command === "next") return this.subnext(msg, p, { voice, deleteMessage })
-        if(msg.channel.permissions.has("MANAGE_MESSAGES"))
-            msg.delete()
-        if(!voice.queue.active) 
-            return msg.reply("I'm not playing anything").then(deleteMessage)
-        
-        voice.msg.setChannel(msg.channel)
-        return voice.msg.queue(msg.author)
+    async run(msg, p, { voice }) {
+        if(msg.command === "next") return this.subnext(msg, p, { voice })
+        return voice.msg.queue()
     }
 }

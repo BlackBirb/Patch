@@ -69,5 +69,6 @@ module.exports.VOICE = {
     },
     ytdlOptions: { filter : 'audioonly' },
     pickTime: 30000,
-    autoLeave: 60000 // should be bigger than pick time.
+    autoLeave: 60000, // should be bigger than pick time.
+    historyLength: 5
 }

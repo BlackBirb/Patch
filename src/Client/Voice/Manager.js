@@ -1,24 +1,30 @@
+const snekfetch = require("snekfetch");
 const ytdl = require("ytdl-core")
-const request = require("request")
-const querystring = require("querystring");
-const { youtubeToken } = require("../../../config.json")
+const config = require("../../../config.json")
+const { youtubeToken } = config
 const Song = require("./Song.js")
 const Queue = require("./Queue.js")
+const History = require("./History.js")
 const Messenger = require("./Messenger.js")
 const constants = require("../Utils/Constants.js").VOICE
 const codes = constants.codes
 
 module.exports = class VoiceManager {
     constructor(g) {
+        this.client = g.client
         this.guild = g
-        this.playing = false
-        this.queue = new Queue() // etc.
+        this.manager = g.client.VoicePlayer
+        this.player = null
+        this.queue = new Queue()
+        this.history = new History(constants.historyLength)
         this.msg = new Messenger(this)
+        this.voiceChannel = null
+
         this.autoLeave = {
             _timeout: null,
             Timeout: () => {
                 if(this.playing) return;
-                if(this.connection)
+                if(this.player)
                     this.leave()
             },
             start: function () {
@@ -35,23 +41,28 @@ module.exports = class VoiceManager {
         Object.defineProperty(this.autoLeave, "active", { get: function() { return this._timeout !== null } })
     }
 
-    get connection() {
-        return this.guild.voiceConnection || null
+    get playing() {
+        return this.player && this.player.playing
     }
 
     join(channel) {
         if(!channel.permissions.has(["CONNECT","SPEAK","USE_VAD"])) return Promise.reject({ code: codes.noPermissions, err: "No permissions"})
         if(channel.guild.id !== this.guild.id) return Promise.reject({ code: codes.differentGuild , err: "Channel is in different guild"})
         if(channel.full) return Promise.reject({ code: codes.fullChannel , err: "Channel is full"})
-        return channel.join()
-            .then(() => { 
-                this.autoLeave.start()
-                return this
-            })
-            .catch(err => {
-                console.error("Error when connecting to voice channel at guild",this.guild.id)
-                throw err
-            })
+        this.voiceChannel = channel
+
+        if(this.player && channel.id !== this.player.channel)
+            this.player.updateVoiceState(channel.id)
+        
+        return this.manager.join({
+            guild: this.guild.id,
+            channel: channel.id,
+            host: "localhost"
+        }).then(player => {
+            this.autoLeave.start()
+            this.player = player
+            player.on("error", console.error);
+        });
     }
 
     addSong(song) {
@@ -63,22 +74,20 @@ module.exports = class VoiceManager {
     }
 
     play() {
-        if(!this.connection) return this.msg.err("Emm, I think you were too slow and I left... Sorry '^^")
+        if(!this.player) return this.msg.err("Emm, I think you were too slow and I left... Sorry '^^")
         if(!this.queue.now) return this.msg.err("No more songs to play!")
 
-        const stream = ytdl(this.queue.now, constants.ytdlOptions)
-        this.connection.playStream(stream, this.guild.settings.voice)
+        this.player.play(this.queue.now)
             .once("end", this.songEnded.bind(this))
         
-        this.playing = true
         this.msg.nextSong(this.queue.active)
         return this
     }
 
-    songEnded(reason) {
-        this.playing = false
+    songEnded(evn) {
+        this.history.push(this.queue.active)
         const move = this.queue.move()
-        if(reason === 'leave') return;
+        if(evn.reason === 'STOPPED') return;
         if(!move) {
             this.autoLeave.start()
             return this.msg.queueEnd()
@@ -87,24 +96,27 @@ module.exports = class VoiceManager {
     }
 
     async leave() {
-        this.queue.clear()
         const wait = this.msg.channelLeave().then(() => this.msg.setChannel(null))
-        if(this.dispatcher) this.dispatcher.end('leave')
-        if(this.autoLeave.active) this.autoLeave.stop()
-        this.connection.disconnect()
+        if(this.playing) this.player.stop()
+        this.queue.clear()
+        this.manager.leave(this.guild.id);
+        this.player = null
         return wait
     }
 
-    get dispatcher() {
-        return (this.connection && this.connection.dispatcher) || null
-    }
-
-    get voiceChannel() {
-        return (this.connection && this.connection.channel) || null
+    static getTrack(song) {
+        return snekfetch.get(`http://${config.lavalink.host}:${config.lavalink.port}/loadtracks`)
+        .query({ identifier: song })
+        .set("Authorization", config.lavalink.password)
+        .then(r => r.body[0].track)
     }
 
     static songInfo(id, author) {
-        return ytdl.getInfo(id).then(info => {
+        return Promise.all([
+            ytdl.getInfo(id),
+            this.getTrack(id)
+        ])
+        .then(([ info, track ]) => {
             const data = {
                 id: id,
                 title: info.title,
@@ -116,22 +128,22 @@ module.exports = class VoiceManager {
                     url: info.author.channel_url
                 }
             }
-            return new Song(data, author)
+            return new Song(data, author, track)
         })
         
     }
 
     static find(query) {
-        return new Promise((resolve, reject) => {
-            const options = {
-                q: query,
-                part: 'snippet',
-                maxResults: 5,
-                type: 'video',
-                key: youtubeToken
-            }
-            request(`https://www.googleapis.com/youtube/v3/search?${querystring.stringify(options)}`, { method: "GET", json: true }, (err, res) => {
-                if(err) reject(err)
+        const options = {
+            q: query,
+            part: 'snippet',
+            maxResults: 5,
+            type: 'video',
+            key: youtubeToken
+        }
+        return snekfetch.get(`https://www.googleapis.com/youtube/v3/search`)
+            .query(options)
+            .then(res => {
                 const data = res.body.items.map(song => ({
                     id: song.id.videoId,
                     title: song.snippet.title,
@@ -140,8 +152,7 @@ module.exports = class VoiceManager {
                         name: song.snippet.channelTitle
                     }
                 }))
-                return resolve(data)
+                return data
             })
-        })
     }
 }

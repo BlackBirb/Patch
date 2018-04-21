@@ -107,10 +107,18 @@ module.exports = class Test extends Command {
     }
 
     /**
+     * Add type checks etc. to this function, returning false (Has to be boolean "false") will stop command from executing
+     * Everything that this inhibitor changes will be preserved
+     */
+    inhibitor(msg, params, utils) {
+        return true
+    }
+
+    /**
      * You create subcommand just by adding function `sub<commandName>`
      * It get the same args as normal run function.
      */
-    subhello(msg, params, cmdName) {
+    subhello(msg, params, utils) {
 
     }
 

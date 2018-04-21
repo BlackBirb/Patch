@@ -23,7 +23,7 @@ module.exports = class Queue {
     }
 
     get now() {
-        return (this.active && this.active.url) || null
+        return (this.active && this.active.track) || null
     }
 
     get size() {
