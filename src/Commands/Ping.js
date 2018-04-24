@@ -1,5 +1,5 @@
 /* eslint-disable */
-const { RichEmbed } = require("discord.js")
+const { MessageEmbed } = require("discord.js")
 const Command = require("../Structures/Command.js")
 
 module.exports = class Ping extends Command {
@@ -56,7 +56,7 @@ module.exports = class Ping extends Command {
         let color = this.calcColor(ping.http)
         if(ping.ws > ping.http) color = this.calcColor(ping.ws)
 
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setColor(color)
             .setTitle(utils.pickRandom(this.messages))
             .addField("Http ping", ping.http, true)

@@ -17,7 +17,7 @@ process.on('SIGINT', () => {
     })
 });
 process.on("unhandledRejection", err => {
-    console.log(`Unhandled rejection`, err)
+    console.log(`Unhandled rejection`, err.stack)
 });
 if(config.run.memwatch) {
     const memwatch = require("memwatch")

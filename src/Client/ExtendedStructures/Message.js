@@ -37,7 +37,7 @@ Object.defineProperties(Discord.Message.prototype, {
     },
     "checkIfResponse": {
         value: function() {
-            return this.client.db.findResponse(this.content, this.author.id, this.guild && this.guild.id).then(res => {
+            return this.client.db.findResponse(this.content.toLowerCase(), this.author.id, this.guild && this.guild.id).then(res => {
                 if(res) {
                     this.type = "RESPONSE"
                     this.responses = res

@@ -4,7 +4,7 @@ const end = () => randEnds[Math.floor(Math.random()*randEnds.length)]
 module.exports = function(guild) {
     console.info(`Joined a ${guild.name}#${guild.id} Guild!`)
     guild.prepareGuild()
-    guild.fetchMember(guild.ownerID).then(owner => {
+    guild.members.fetch(guild.ownerID).then(owner => {
         owner.user.send({ embed: {
             color: 0x75E9FF,
             title: "Hi! I'm patch!",

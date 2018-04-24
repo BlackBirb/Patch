@@ -77,6 +77,7 @@ module.exports = class VoiceManager {
         if(!this.player) return this.msg.err("Emm, I think you were too slow and I left... Sorry '^^")
         if(!this.queue.now) return this.msg.err("No more songs to play!")
 
+        this.queue.active.playingTimestamp = new Date();
         this.player.play(this.queue.now)
             .once("end", this.songEnded.bind(this))
         

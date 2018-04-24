@@ -39,7 +39,7 @@ module.exports = class VoiceMessenger {
             clearTimeout(this.timeout)
         if(!next) return
         this.timeout = setTimeout(() => {
-            this.nowPlaying()
+            if(this.voice.queue.active) this.nowPlaying()
             this.timeout = null
         }, 30000)
     }
@@ -70,7 +70,7 @@ module.exports = class VoiceMessenger {
         const song = this.voice.queue.active
         const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
-            .setAuthor("Now playing", this.channel.client.user.avatarURL)
+            .setAuthor("Now playing", this.channel.client.user.avatarURL())
         if(!song) {
             return this.send(embed
                 .setDescription(`Nothing!`)
@@ -93,7 +93,7 @@ module.exports = class VoiceMessenger {
         const now = this.voice.queue.active
         const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
-            .setAuthor("Full Queue", this.channel.client.user.avatarURL)
+            .setAuthor("Full Queue", this.channel.client.user.avatarURL())
             .setDescription(`Queue size: ${this.voice.queue.size} | Length: ${formatSec(this.voice.queue.length)}\nNow playing:\n**[${now.title}](${now.url})** requested by: *${now.requester.tag}*`) 
             .setFooter(`Powered by Patch`)
         queue.forEach((song, i) => {
@@ -109,7 +109,7 @@ module.exports = class VoiceMessenger {
         const song = this.voice.queue.q[0]
         const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
-            .setAuthor("Next in Queue", this.channel.client.user.avatarURL)
+            .setAuthor("Next in Queue", this.channel.client.user.avatarURL())
         if(!song)
             embed.setDescription("There's no more songs :c\nRequest some!")
                 .setFooter("Powered by Patch")
@@ -130,14 +130,14 @@ module.exports = class VoiceMessenger {
         const history = this.voice.history
         const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
-            .setAuthor("Playing history", this.voice.guild.client.user.avatarURL)
+            .setAuthor("Playing history", this.voice.guild.client.user.avatarURL())
         if(history.length === 0)
             embed.setDescription("I just started playing!")
                 .setFooter("Powered by Patch")
         else {
-            embed.setDescription(`Last ${history.length} song${history.length > 1 && "s"} I played:`)
+            embed.setDescription(`Last ${history.length} song${history.length > 1 ? "s" : ""} I played:`)
             history.his.forEach((song, i) => 
-                embed.addField(`#${i+1}`, `**[${song.title}](${song.url})**\n*requested by ${song.requester.tag}*`))
+                embed.addField(`#${i+1}`, `**[${song.title}](${song.url})** *[${formatSec(song.length)}]*\n*requested at ${song.playedDate} by ${song.requester.tag}*`))
         }
         
         this.reset()
@@ -149,7 +149,7 @@ module.exports = class VoiceMessenger {
         const song = this.voice.history.last
         const embed = new MessageEmbed()
             .setColor(constants.STYLE.embed.color)
-            .setAuthor("Song that just played", this.channel.client.user.avatarURL)
+            .setAuthor("Song that just played", this.channel.client.user.avatarURL())
         if(!song)
             embed.setDescription("Nothing... I just started playing")
                 .setFooter("Powered by Patch")
@@ -172,7 +172,6 @@ module.exports = class VoiceMessenger {
     setChannel(channel) {
         if(!channel) {
             this.channel = null
-            this.message = null
             return null
         }
         if(this.channel && this.channel.id === channel.id) return false

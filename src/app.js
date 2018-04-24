@@ -30,6 +30,7 @@ module.exports = class Bot extends Discord.Client {
             this.webInterface = null
             this.emit("readyWeb")
         } else {
+            console.log("wat")
             this.webInterface = new WebInterface(this)
             this.webInterface.init().then(() => this.emit("readyWeb"))
         }

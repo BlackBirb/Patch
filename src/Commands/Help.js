@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const Command = require("../Structures/Command.js")
 
 module.exports = class Help extends Command {
@@ -45,7 +45,7 @@ module.exports = class Help extends Command {
     }
 
     async run(msg, params, { utils }) {
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setColor(this.client.constants.STYLE.embed.color)
             .setFooter("With <3 ~Patch")
         if(!params.command) {

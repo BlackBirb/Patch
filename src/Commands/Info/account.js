@@ -1,4 +1,4 @@
-const MessageEmbed = require("discord.js").RichEmbed
+const { MessageEmbed } = require("discord.js")
 const constants = require("../../Client/Utils/Constants.js")
 const Command = require("../../Structures/Command.js")
 
@@ -31,7 +31,7 @@ module.exports = class Account extends Command {
         const account = await msg.author.account
         const embed = new MessageEmbed()
             .setTitle(`${msg.member ? msg.member.displayName : msg.author.username}'s account.`)
-            .setThumbnail(msg.author.avatarURL)
+            .setThumbnail(msg.author.avatarURL())
             .setDescription(utils.pickRandom(this.descriptions))
             .setColor(constants.STYLE.embed.color)
             .addField("Moneyz", account.currency + " 🍪", true)

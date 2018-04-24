@@ -44,7 +44,7 @@ module.exports = class Join extends Command {
                 return msg.channel.send("I can't find that channel, sorry.")
         }
 
-        if(voiceChannel.id === voice.player.channel) return msg.reply(`I'm already on this channel!`).then(deleteMessage)
+        if(voiceChannel && voice.player && voiceChannel.id === voice.player.channel) return msg.reply(`I'm already on this channel!`).then(deleteMessage)
 
         try {
             await voice.join(voiceChannel)

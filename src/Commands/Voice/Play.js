@@ -25,9 +25,10 @@ module.exports = class Play extends Command {
         this.numberReactions = ["❌","1⃣","2⃣","3⃣","4⃣","5⃣"]
     }
 
-    async addReactions(message, amount) {
+    async addReactions(message, amount, deleted) {
         try {
             for(let i=1; i<=amount;i++) {
+                if(deleted) return;
                 await message.react(this.numberReactions[i])
             }
             await message.react(this.numberReactions[0])
@@ -35,7 +36,7 @@ module.exports = class Play extends Command {
         catch(err) {
             console.log("Nope, still breaks")
         }
-        return
+        return;
     }
 
     async pickSong(msg, query, voiceManager) {
@@ -53,10 +54,12 @@ module.exports = class Play extends Command {
 
         const select = await msg.channel.send(embed)
         
-        const reactionsPromise = this.addReactions(select, search.length)
+        let deleted = false
+        const reactionsPromise = this.addReactions(select, search.length, deleted)
 
         const collected = await select.awaitReactions((reaction, user) => this.numberReactions.includes(reaction.emoji.name) && user.id === msg.author.id, { time: constants.pickTime, max: 1 } )
 
+        deleted = true
         reactionsPromise.then(() => select.delete())
 
         if(collected.size < 1)

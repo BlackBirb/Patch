@@ -139,39 +139,31 @@ class MongoManager {
         })
         if(global) return global.responses
         if(authorID) {
-            const user = await this.collection("userResponses").findOne({ 
-                [authorID]: {
-                    $elemMatch: {
-                        query: msg
-                    }
-                }
+            const user = await this.collection("userResponses").findOne({
+                id: authorID,
+                query: msg
             })
-            if(user) return user[authorID][0].responses
+            if(user) return user.responses
         }
         if(guildID) {
             const guild = await this.collection("guildResponses").findOne({ 
-                [guildID]: {
-                    $elemMatch: {
-                        query: msg
-                    }
-                }
+                id: guildID,
+                query: msg
             })
-            if(guild) return guild[guildID][0].responses
+            if(guild) return guild.responses
         }
-        
         return null
     }
 
-    async addResponse(query, responses, type = "global", id) {
+    addResponse(query, responses, type = "global", id) {
+        query = query.toLowerCase()
         if (type === "global") {
-            return this.collection("globalResponses").updateOne(
-                {
+            return this.collection("globalResponses").updateOne({
                     $or: [
                         { query },
                         { responses }
                     ]
-                },
-                {
+                }, {
                     $addToSet: {
                         query,
                         responses
@@ -180,32 +172,24 @@ class MongoManager {
                 { upsert: true }
             )
         }
+        if(!id) throw new TypeError("No ID provided")
         if (type === "user" || type === "guild") {
-            if(await this.collection(type+"Responses").findOne({ [id]: { $exists : true } }))
-                return this.collection(type + "Responses").updateOne(
-                    {
-                        $or: [
-                            { [id]: { $elemMatch: { query } } },
-                            { [id]: { $elemMatch: { responses } } }
-                        ]
-                    },
-                    {
-                        $addToSet: {
-                            [`${id}.$[].query`]: query,
-                            [`${id}.$[].responses`]: responses
-                        }
-                    }
-                    // upsert doesn't work :C
-                )
-            else
-                return this.collection(type+"Responses").insertOne({
-                    [id]: [
-                        {
-                            query: [ query ],
-                            responses: [ responses ]
-                        }
+            return this.collection(type+"Responses").updateOne({
+                    $or: [
+                        { id, query },
+                        { id, responses }
                     ]
-                })
+                }, {
+                    $addToSet: {
+                        query,
+                        responses
+                    },
+                    $setOnInsert: {
+                        id
+                    }
+                }, 
+                { upsert: true }
+            )
         }
         return null
     }
