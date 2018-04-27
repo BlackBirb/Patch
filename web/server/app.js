@@ -62,17 +62,23 @@ const configureExpress = (client, app) => {
         extended: true
     }));
 
-    app.get("/api/login", passport.authenticate("discord"))
+    app.get("/api/login", (req, res, next) => {
+        if(!req.isAuthenticated()) return next();
+        else res.redirect("/")
+    }, passport.authenticate("discord"))
 
     app.get("/api/callback", 
         passport.authenticate("discord", { failureRedirect: "/autherror" }), 
-        (req, res) => res.redirect("/")
+        (req, res) => res.redirect("/login")
     )
 
-    app.get("/api/logout", function (req, res) {
+    app.get("/api/logout", (req, res, next) => {
+        if(req.isAuthenticated()) return next();
+        else res.redirect("/")
+    },function (req, res) {
         req.session.destroy(() => {
             req.logout()
-            res.redirect("/")
+            res.redirect("/logout")
         })
     })
     app.use("/api", APIRoutes)
