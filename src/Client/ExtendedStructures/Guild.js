@@ -60,10 +60,8 @@ Object.defineProperties(Discord.Guild.prototype, {
      * Returns a tag if exists else null
      */
     "tag": {
-        value: function(name, msg) {
-            let tag = this.settings.tags.hasOwnProperty(name) ? this.settings.tags[name] : null;
-            if(!tag) return null
-            return this.client.utils.transformTag(tag, msg)
+        value: function(name) {
+            return this.settings.tags.hasOwnProperty(name) ? this.settings.tags[name] : null;
         }
     },
     "tags": {

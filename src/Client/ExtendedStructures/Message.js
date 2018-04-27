@@ -22,7 +22,6 @@ Object.defineProperties(Discord.Message.prototype, {
             }
             if(isCmd === null) return null
 
-            const name = isCmd[1]
             let params = null
 
             if(isCmd[2] !== undefined) {
@@ -30,7 +29,7 @@ Object.defineProperties(Discord.Message.prototype, {
             }
 
             this.type = "COMMAND"
-            this.command = name
+            this.command = isCmd[1].toLowerCase()
             this.params = params
             return this
         }

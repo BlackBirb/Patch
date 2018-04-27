@@ -10,18 +10,21 @@ module.exports = function(msg) { // fix this
     if(msg.author.permissions === PERMISSIONS.BLACKLISTED) return; // ignore blacklisted people
 
     if(msg.channel.type === "text" && cmd && !cmd.ignoreBlacklist) {
-        if(!msg.guild.settings.active) return;
-        if(msg.guild.settings.blacklistedChannels.includes(msg.channel.id)) return;
+        if(!msg.guild.settings.active
+        || msg.guild.settings.blacklistedChannels.includes(msg.channel.id)
+        || msg.guild.settings.blacklistedCategories.includes(msg.channel.parentID)
+        ) return;
     }
 
     if(!cmd) {
         if(msg.channel.type === "text") {
-            let tag = msg.guild.tag(msg.command, msg)
+            let name = (`${msg.command} ${msg.params.join(" ")}`).toLowerCase()
+            let tag = msg.guild.tag(name)
             if(tag === null) 
-                tag = msg.author.account.tags[msg.command] || null //bug
+                tag = msg.author.account.tags[name] || null //bug
 
             if(tag !== null) 
-                return msg.channel.send(tag)
+                return msg.channel.send(this.utils.transformTag(tag, msg))
         }
         return msg.react(failCommand)
     }

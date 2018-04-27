@@ -17,49 +17,52 @@ class FakeManager { // for testing when i'm too lazy to start mongoDB
     addResponse() { return Promise.resolve(false) }
 }
 
+// let's try having everything in one db :thonk:
 class MongoManager {
     constructor(db) {
-        this.db = db
+        this.mongodb = db
+        this.db = db.db("patch")
         this.collections = {
             "cmdLogs": {
-                db: "logs",
+                //db: "logs",
                 collection: "commands"
             },
             "guildSettings": {
-                db: "settings",
+                //db: "settings",
                 collection: "guild"
             },
             "userSettings": {
-                db: "settings",
+                //db: "settings",
                 collection: "user"
             },
             "userAccounts": {
-                db: "accounts",
+                //db: "accounts",
                 collection: "user"
             },
             "globalResponses": {
-                db: "responses",
+                //db: "responses",
                 collection: "global"
             },
             "userResponses": {
-                db: "responses",
+                //db: "responses",
                 collection: "user"
             },
             "guildResponses": {
-                db: "responses",
+                //db: "responses",
                 collection: "guild"
             }
         }
     }
 
     destroy() {
-        return this.db.close()
+        return this.mongodb.close()
     }
 
     collection(name) {
         if(!this.collections.hasOwnProperty(name)) return console.error("Tried to use collection that doesn't exists!")
         const coll = this.collections[name]
-        return this.db.db(coll.db).collection(coll.collection)
+        return this.db.collection(coll.collection)
+        //return this.db.db(coll.db).collection(coll.collection)
     }
 
     async logCommand(cmd, msg) {
@@ -192,10 +195,6 @@ class MongoManager {
             )
         }
         return null
-    }
-
-    close() {
-        this.mongoDB.close()
     }
 }
 

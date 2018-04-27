@@ -7,7 +7,7 @@ Object.defineProperties(Discord.GuildChannel.prototype, {
     },
     blacklisted: {
         get: function() {
-            return this.guild.settings.blacklistedChannels.includes(this.id)
+            return this.guild.settings.blacklistedChannels.includes(this.id) || this.guild.settings.blacklistedCategories.includes(this.parentID)
         }
     },
     blacklist: {

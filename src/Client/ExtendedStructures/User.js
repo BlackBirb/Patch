@@ -87,7 +87,7 @@ Object.defineProperties(Discord.User.prototype, {
             return this._account
         },
         set: function(things) {
-            this._account = things
+            this.updateAccount(things)
         }
     },
     /**

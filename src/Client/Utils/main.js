@@ -9,12 +9,12 @@ const transformTag = (tag, msg) => tag
     .replace(/\$authornick#/g, msg.member ? msg.member.displayName : msg.author.nickname)
     .replace(/\$channel#/g, msg.channel.name)
     .replace(/\$params#/g, msg.params ? msg.params.join(" ") : "-")
-    .replace(/\$param(\d)#/g, msg.params ? msg.params[/\$param(\d)/g.exec(tag)[1]-1] : "-") 
+    .replace(/\$param(\d)#/g, (match, id) => msg.params && msg.params[id-1] ? msg.params[id-1] : "-") 
 
 // this all is so stupid and probably slow...
 
 const formatSec = sec => 
-    [Math.floor(sec / 86400),Math.floor(sec / 3600) % 24,Math.floor(sec / 60) % 60,sec % 60 ]
+    [ Math.floor(sec / 86400), Math.floor(sec / 3600) % 24, Math.floor(sec / 60) % 60, sec % 60 ]
         .map(v => v < 10 ? "0" + v : v)
 		.filter((v,i) => v !== "00" || i > 1)
         .join(":")

@@ -33,11 +33,12 @@ module.exports.defaults = {
         prefix: "!",
         tags: {
             dicc: "Yes i like",
-            try: "Author: $author#\nNo mention: $authornick#\nchannel: $channel#\nparams: $params#\nparam2: $param2#"
+            "how to use tags": "Author: $author#\nNo mention: $authornick#\nchannel: $channel#\nparams: $params#\nparam2: $param2#"
         },
         defaultPermissions: 0x1,
         active: true,
         blacklistedChannels: [],
+        blacklistedCategories: [],
         responses: true,
         voice: {
             volume: .5
