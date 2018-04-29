@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  name: 'Welcome Page',
+  name: 'Welcome-Page',
   data () {
     return {
       messages: [

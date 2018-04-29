@@ -12,6 +12,7 @@ module.exports = class Command {
     }
 
     guildOptions(guild) {
+        if(!guild) return {}
         let data = guild.commandData[this.id]
         if(!data)
             data = guild.createCmdData(this)
@@ -63,7 +64,7 @@ module.exports = class Command {
          * @param deleteMessage ment to be added to .then() it will delete message after 30s
          */
         const CommandUtils = {
-            voice: msg.guild.voice,
+            voice: msg.guild ? msg.guild.voice : null,
             voiceManager: this.client.VoiceManager,
             utils: this.client.utils,
             deleteMessage: m => m.delete({ timeout: 30000 })

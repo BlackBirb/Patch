@@ -1,7 +1,7 @@
 <template>
     <v-container mt-5>
         <div v-if="$route.params.id">
-            Ur mom super gay
+            Yeee...
         </div>
         <div v-else>
             Pick a guild first ^

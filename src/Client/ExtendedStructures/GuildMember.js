@@ -41,7 +41,7 @@ Object.defineProperties(Discord.GuildMember.prototype, {
     },
 
     // Copy paste - checks only for guild permissions
-    hasPermissionLocal: {
+    hasCmdPermissionLocal: {
         value: function(permission) {
             const permissions = this.permissions
             return (permissions & permission) === permission || permissions === FULL_ADMIN

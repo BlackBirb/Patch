@@ -26,7 +26,7 @@
     </v-toolbar-items>
     <v-spacer />
     <v-toolbar-items>
-        <v-btn v-if="!logged" flat href="/api/login" target="_blank">
+        <v-btn v-if="!logged" flat href="/api/login" target="_blank" v-bind:loading="logged === null">
           Login with Discord!
         </v-btn>
         <v-btn v-else flat :to="'/dashboard'+(favGuild ? `/${favGuild}` : '') ">Dashboard</v-btn>
@@ -37,7 +37,7 @@
 <script>
 
 export default {
-  name: 'Nav Bar',
+  name: 'Nav-Bar',
   data () {
     return {
       guilds: [
@@ -55,7 +55,7 @@ export default {
   },
   computed: {
     logged: function () {
-      return true
+      return this.$store.state.logged
     },
     favGuild: function () {
       return null // '123123'

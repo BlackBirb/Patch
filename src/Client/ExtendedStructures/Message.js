@@ -8,6 +8,7 @@ Object.defineProperties(Discord.Message.prototype, {
     "prepareCommand": {
         value: function() {
             const reg = {
+                DM: /^(\w+)(?: (.+))?/gis,
                 prefix: new RegExp(`^${this.prefix}(\\w+)(?: (.+))?`,"gis"),
                 mention: /^<@!?\d{18}> ?(\w+)(?: (.+))?/gis,
                 nickname: /^patch, ?(\w+)(?: (.+))?/gis
@@ -17,9 +18,12 @@ Object.defineProperties(Discord.Message.prototype, {
                 if(!this.mentions.everyone && this.mentions.users.has(this.client.user.id))
                     isCmd = reg.mention.exec(this.content)
             }
-            if(!isCmd) {
+            if(!isCmd)
                 isCmd = reg.nickname.exec(this.content)
-            }
+
+            if(!isCmd && this.channel.type === "dm") 
+                isCmd = reg.DM.exec(this.content)
+
             if(isCmd === null) return null
 
             let params = null
