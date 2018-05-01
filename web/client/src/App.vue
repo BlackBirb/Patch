@@ -1,22 +1,38 @@
 <template>
   <div id="app">
     <v-app>
-      <Nav-Bar >
-        Hello?
-      </Nav-Bar>
-      <v-content>
-        <router-view/>
+      <router-view v-if="$store.state.logged !== null"/>
+      <v-content v-else>
+        <v-container fill-height>
+          <v-layout column justify-center align-center>
+            <h1 class="display-4">{{ randLoading }}</h1>
+            <p>Please wait</p>
+          </v-layout>
+        </v-container>
       </v-content>
     </v-app>
   </div>
 </template>
 
 <script>
-import NavBar from '@/components/NavBar.vue'
 export default {
   name: 'App',
-  components: {
-    NavBar
+  data () {
+    return {
+      messages: [
+        "Loading",
+        "Logging in",
+        "Hacking",
+        "Debugging",
+        "Trying",
+        "Something"
+      ]
+    }
+  },
+  computed: {
+    randLoading: function() {
+      return this.messages[Math.floor(Math.random() * this.messages.length)] + "..."
+    }
   }
 }
 </script>

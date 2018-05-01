@@ -6,7 +6,7 @@ Patch is a discord bot with tons of cool functions!
 - Moderating stuff
 - etc. idk
 ## Usage
-If you want Patch on your own server you can add her with [this link](https://discordapp.com/oauth2/authorize?client_id=207051061213528064&scope=bot&permissions=104188992)!
+If you want Patch on your own server you can add her with [this link](https://discordapp.com/oauth2/authorize?client_id=207051061213528064&scope=bot&permissions=104188992) (rn is running on old version)!
 By default Patch will react to `!` or mention as prefix. So start with `!help`.
 
 A big part of this bot is it's [website](really.later)! You an manage your settings there, get cool stuff and much more, so go there!

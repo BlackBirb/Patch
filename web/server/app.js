@@ -20,7 +20,8 @@ const configureExpress = (client, app) => {
     app.disable('x-powered-by'); // why not?
     app.use(function (req, res, next) {
         res.set({
-            "powered-by": "Patch"
+            "powered-by": "Patch",
+            "Access-Control-Allow-Origin": "*"
         })
         if (req.secure) {
             return next();
@@ -64,24 +65,28 @@ const configureExpress = (client, app) => {
 
     app.get("/api/login", (req, res, next) => {
         if(!req.isAuthenticated()) return next();
-        else res.redirect("/")
+        else res.redirect("/login")
     }, passport.authenticate("discord"))
 
     app.get("/api/callback", 
-        passport.authenticate("discord", { failureRedirect: "/autherror" }), 
-        (req, res) => res.redirect("/login")
+        passport.authenticate("discord", { successRedirect: '/login', failureRedirect: "/autherror" })
     )
 
-    app.get("/api/logout", (req, res, next) => {
-        if(req.isAuthenticated()) return next();
+    app.get("/api/logout", (req, res) => {
+        if(req.isAuthenticated()) {
+            req.session.destroy(() => {
+                req.logout()
+                res.redirect("/logout")
+            })
+        }
         else res.redirect("/")
-    },function (req, res) {
-        req.session.destroy(() => {
-            req.logout()
-            res.redirect("/logout")
-        })
     })
-    app.use("/api", APIRoutes)
+    app.use("/api", APIRoutes(client))
+
+    app.get("/dashboard", (req, res, next) => {
+        if(req.isAuthenticated()) next()
+        else res.redirect("/")
+    })
 
     app.use("*", static(path.resolve(__dirname, '../public/')))
 }

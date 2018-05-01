@@ -56,7 +56,7 @@ module.exports.defaults = {
         customHug: {
             give: null,
             back: null,
-            "get?": null
+            get: null
         },
         tags: {}
     }
