@@ -1,6 +1,5 @@
 <template>
   <v-content>
-    <Nav-Bar />
     <v-jumbotron height="100%" class="white" :src="randomBg">
       <v-container fill-height fluid text-xs-center>
         <v-layout pt-5 class="background" row wrap>
@@ -25,7 +24,6 @@
 </template>
 
 <script>
-import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
 
 export default {
@@ -45,7 +43,6 @@ export default {
     }
   },
   components: {
-    NavBar,
     Footer
   },
   computed: {

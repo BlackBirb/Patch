@@ -4,7 +4,6 @@ const config = require("./config.json")
 
 const client = new Bot(config, Web);
 
-
 process.on('SIGINT', () => {
     console.warn("Terminating Services...");
     client.terminate().then(() => {

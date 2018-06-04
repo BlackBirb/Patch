@@ -24,14 +24,16 @@ module.exports = class VoiceMessenger {
         this.timeout = null
     }
 
-    async send(...opts) {
+    send(...opts) {
         if(!this.channel) return;
         if(this.message) {
             this.message.delete()
             this.message = null
         }
-        this.message = await this.channel.send(...opts)
-        return this.message
+        let msg = this.channel.send(...opts).then(message => {
+            this.message = message
+        })
+        return msg
     }
 
     reset(next = true) {

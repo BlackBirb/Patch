@@ -11,7 +11,7 @@ const Strategy = require("passport-discord").Strategy;
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
 
-const APIRoutes = require("./Routes/API.js")
+const APIRoutes = require("./Routes/API")
 const { port, useSSL } = require("./constants.json")
 
 

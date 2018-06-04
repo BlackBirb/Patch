@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 import Axios from 'axios'
 
 const axios = Axios.create({
@@ -5,8 +6,13 @@ const axios = Axios.create({
 })
 
 export default {
-  isLogged: function () {
-    // eslint-disable-next-line no-throw-literal
+  isLogged () {
     return axios.get('auth').then(res => res.data).catch(res => { throw false })
+  },
+  loadGuilds () {
+    return axios.get('guilds').then(res => res.data)
+  },
+  loadAccount () {
+    return axios.get('account').then(res => res.data)
   }
 }

@@ -5,6 +5,7 @@ export default {
   discriminator: null,
   id: null,
   avatar: null,
+  avatarUrl: null,
   guilds: [],
   account: {
     currency: 0,

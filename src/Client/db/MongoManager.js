@@ -65,7 +65,7 @@ class MongoManager {
         //return this.db.db(coll.db).collection(coll.collection)
     }
 
-    async logCommand(cmd, msg) {
+    logCommand(cmd, msg) {
         if(msg.channel.type === "text") {
             return this.collection("cmdLogs").insertOne({
                 command: cmd.name,
@@ -101,7 +101,7 @@ class MongoManager {
         }
     }
 
-    async getSettings(id, type = "guild") {
+    getSettings(id, type = "guild") {
         return this.collection(type+"Settings").findOne({ id }).then(settings => {
             if(!settings) return null
             // holey object are bad objects
@@ -111,11 +111,11 @@ class MongoManager {
         })
     }
 
-    async setUserPermissions(id, permissions) {
+    setUserPermissions(id, permissions) {
         return this.collection("userSettings").updateOne({ id }, { $set: { permissions } })
     }
 
-    async setMemberPermissions(id, guildID, permissions) {
+    setMemberPermissions(id, guildID, permissions) {
         return this.collection("userSettings").updateOne({ id }, { $set: {
             guildPermissions: {
                 [guildID]: permissions
@@ -123,8 +123,8 @@ class MongoManager {
         }})
     }
 
-    async getUserAccount(id) {
-        this.collection("userAccounts").findOne({ id }).then(acc => {
+    getUserAccount(id) {
+        return this.collection("userAccounts").findOne({ id }).then(acc => {
             if(!acc) {
                 acc = { id, currency: 0 }
                 this.collection("userAccounts").insertOne(acc)

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <v-app>
+      <Nav-Bar />
       <router-view v-if="$store.state.logged !== null"/>
       <v-content v-else>
         <v-container fill-height>
@@ -15,6 +16,8 @@
 </template>
 
 <script>
+import NavBar from '@/components/NavBar'
+
 export default {
   name: 'App',
   data () {
@@ -29,6 +32,9 @@ export default {
       ]
     }
   },
+  components: {
+    NavBar
+  },
   computed: {
     randLoading: function() {
       return this.messages[Math.floor(Math.random() * this.messages.length)] + "..."
@@ -39,4 +45,7 @@ export default {
 
 <style>
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons');
+.btn__no-uppercase {
+  text-transform: none !important;
+}
 </style>

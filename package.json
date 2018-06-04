@@ -21,6 +21,7 @@
     "express-session": "^1.15.6",
     "ffmpeg-binaries": "^3.2.2-3",
     "helmet": "^3.12.0",
+    "level": "^3.0.1",
     "level-session-store": "^2.1.0",
     "mongodb": "^3.0.3",
     "node-opus": "^0.2.7",
