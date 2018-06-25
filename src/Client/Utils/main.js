@@ -18,10 +18,13 @@ const formatSec = sec =>
         .map(v => v < 10 ? "0" + v : v)
 		.filter((v,i) => v !== "00" || i > 1)
         .join(":")
-        
+
+const escapeRegex = text => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+
 module.exports = {
     pathGetter,
     pickRandom,
     transformTag,
-    formatSec
+    formatSec,
+    escapeRegex
 }

@@ -6,7 +6,7 @@ export function logout({ commit }) {
 }
 
 export function checkLogin({ commit }) {
-  api.isLogged()
+  api.getLogin()
     .then(res => {
       commit('setLogged', true)
       const data = res.user || {}
@@ -15,10 +15,7 @@ export function checkLogin({ commit }) {
         discriminator: data.discriminator || null,
         id: data.id || null,
         avatar: data.avatar,
-        avatarUrl: data.avatar ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.${data.avatar.startsWith('a_') ? 'gif' : 'webp' }` : null,
-        guilds: data.guilds ? data.guilds : [],
-        account: res.account || null,
-        settings: res.settings || null
+        avatarUrl: data.avatar ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.${data.avatar.startsWith('a_') ? 'gif' : 'webp' }` : null
       })
     })
     .catch((err) => {
@@ -32,17 +29,17 @@ export function getGuilds ({ commit }) {
     .then(res => {
       commit('setGuilds', res)
     })
-    .catch(res => {
-      return
+    .catch(err => {
+      console.err(err)
     })
 }
 
-export function getAccount () {
+export function getAccount ({ commit }) {
   api.loadAccount()
     .then(res => {
       commit('setAccountData', res)
     })
     .catch(err => {
-      return;
+      console.error(err)
     })
 }

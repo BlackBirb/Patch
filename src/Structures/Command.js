@@ -1,5 +1,7 @@
 const Parameters = require("./Parameters.js")
 
+const passInhib = (inhib, ...data) => inhib(...data) !== false
+
 module.exports = class Command {
     constructor(client, id) {
         this.client = client
@@ -9,6 +11,17 @@ module.exports = class Command {
         this.group = "unassigned"
         this.permissions = client.constants.PERMISSIONS.DEFAULT
         this.ignoreBlacklist = false
+        this.allInhibitors = []
+    }
+
+    init() {
+        if(typeof this.inhibitor === "function") 
+            this.allInhibitors.push(this.inhibitor)
+        if(typeof this.inhibitors === "object") {
+            for(const key in this.inhibitors) { // works for arrays and objects
+                this.allInhibitors.push(this.inhibitors[key])
+            }
+        }
     }
 
     guildOptions(guild) {
@@ -72,10 +85,9 @@ module.exports = class Command {
 
         this.data = this.guildOptions(msg.guild)
 
-        if(typeof this.inhibitor === "function") {
-            const passed = this.inhibitor(msg, params, CommandUtils)
-            if(passed === false) // i wan't only false not all falsy values
-                return;
+        if(this.allInhibitors.length > 0) {
+            for(const inhib of this.allInhibitors)
+                if(!passInhib(inhib, msg, params, CommandUtils)) return;
         }
 
         return this[runAt](msg, params, CommandUtils)

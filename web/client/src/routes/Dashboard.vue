@@ -5,7 +5,7 @@
             Yeee... EEM?
         </div>
         <div v-else>
-            Key
+            {{ $store.state.account }}
         </div>
     </v-container>
   </v-content>

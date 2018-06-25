@@ -66,6 +66,12 @@ module.exports = class Registry {
         return id && this.commands.get(id)
     }
 
+    initCommands() {
+        for(const cmd of this.commands.values()) {
+            cmd.init()
+        }
+    }
+
     reload(cmd = null) {
         if(!cmd) {
             this.registeredPaths.forEach(p => delete require.cache[require.resolve(p)])

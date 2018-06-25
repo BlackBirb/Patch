@@ -24,7 +24,7 @@
         </v-list-tile>
       </v-list>
       <v-card-actions class="align-center justify-center">
-        <v-btn to="/api/logout" flat class="nav-menu-btn" color="error">Logout</v-btn>
+        <v-btn href="/api/logout" flat class="nav-menu-btn" color="error">Logout</v-btn>
       </v-card-actions>
     </v-card>
   </v-toolbar-items>
@@ -41,21 +41,19 @@ export default {
     }
   },
   methods: {
-    moveTo (route) {
+    moveTo (...route) {
       this.btnActive = false
       this.cActive = false
       if (this.$route.name !== 'Dashboard')
-        this.$router.push(route)
+        this.$router.push(route.join("/"))
     },
     show (target) {
+      this.width = this.$refs.activator.$el.clientWidth
       this[target + 'Active'] = true
     },
     hide (target) {
       this[target + 'Active'] = false
     }
-  },
-  mounted () {
-    this.width = this.$refs.activator.$el.clientWidth
   },
   computed: {
     active () {

@@ -8,7 +8,8 @@ Object.defineProperties(Discord.Message.prototype, {
     "prepareCommand": {
         value: function() {
             const reg = {
-                DM: /^(\w+)(?: (.+))?/gis,
+                DM: /(?:<@!?\d{18}>)? ?(\w+)(?: (.+))?/gis,
+                // Remember to escape custom prefix with utils.escapeRegex
                 prefix: new RegExp(`^${this.prefix}(\\w+)(?: (.+))?`,"gis"),
                 mention: /^<@!?\d{18}> ?(\w+)(?: (.+))?/gis,
                 nickname: /^patch, ?(\w+)(?: (.+))?/gis

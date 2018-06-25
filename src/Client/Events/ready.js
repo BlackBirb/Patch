@@ -2,6 +2,10 @@ const { PlayerManager } = require("discord.js-lavalink");
 const getStatus = require("../Utils/playingStatus.js")
 
 module.exports = function(evn) {
+    console.loading("Initializing commands")
+    this.registry.initCommands()
+    console.ok("Commands initialized")
+
     if(typeof evn === "string") {
         return console.loaded("Fake test loaded!")
     }

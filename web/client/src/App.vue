@@ -2,7 +2,7 @@
   <div id="app">
     <v-app>
       <Nav-Bar />
-      <router-view v-if="$store.state.logged !== null"/>
+      <router-view v-if="isLogged"/>
       <v-content v-else>
         <v-container fill-height>
           <v-layout column justify-center align-center>
@@ -36,8 +36,11 @@ export default {
     NavBar
   },
   computed: {
-    randLoading: function() {
+    randLoading() {
       return this.messages[Math.floor(Math.random() * this.messages.length)] + "..."
+    },
+    isLogged() {
+      return this.$store.state.logged !== null
     }
   }
 }
@@ -48,4 +51,34 @@ export default {
 .btn__no-uppercase {
   text-transform: none !important;
 }
+
+#app {
+  margin-top: 48px;
+}
+
+.fix-image {
+  object-fit: contain;
+  max-width: 100%;
+}
+
+hr {
+  margin: 1em auto;
+}
+
+hr.xs {
+  width: 20%;
+}
+
+hr.align-right {
+  margin: 1em 4px 1em auto;
+}
+
+hr.align-left {
+  margin: 1em auto 1em 4px;
+}
+
+a {
+  text-decoration: none;
+}
+
 </style>

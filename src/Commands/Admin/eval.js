@@ -57,7 +57,7 @@ module.exports = class Eval extends Command {
     
     /* eslint-disable no-unused-vars */
     async run(msg, params, t) {
-        const { client, client: { constants } } = this // for eval scope
+        const { client, client: { constants, utils } } = this // for eval scope
         const start = Date.now()
         let parsed = null;
         if(params[0] === "nores") {

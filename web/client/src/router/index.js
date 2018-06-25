@@ -2,9 +2,22 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Welcome from '@/routes/Welcome'
 import Dashboard from '@/routes/Dashboard'
+import Events from '@/routes/Events'
 import store from '@/store'
 
 Vue.use(Router)
+
+const loaded = []
+
+function loadBefore(...actions) {
+  return function beforeEnter(to, from, next) {
+    Promise.all(
+      actions
+        .filter(action => !loaded.includes(action))
+        .map(action => loaded.push(action) && store.dispatch(action))
+    ).then(() => next())
+  }
+}
 
 export default new Router({
   mode: 'history',
@@ -14,14 +27,16 @@ export default new Router({
       name: 'Welcome Page',
       component: Welcome
     }, {
-      path: '/dashboard/:id?',
+      path: '/dashboard',
       name: 'Dashboard',
-      component: Dashboard
+      component: Dashboard,
+      beforeEnter: loadBefore('getAccount')
+      // children: []
     }, {
       path: '/logout',
       beforeEnter (to, from, next) {
         if(store.state.logged)
-          store.dispatch('logout').then(r => {
+          store.dispatch('logout').then(() => {
             next("/")
           })
         else next("/")
@@ -30,17 +45,14 @@ export default new Router({
       path: '/login',
       beforeEnter (to, from, next) {
         if(!store.state.logged)
-          store.dispatch('checkLogin').then(r => {
+          store.dispatch('checkLogin').then(() => {
             next('/dashboard')
           })
         else next("/dashboard")
       }
     }, {
-      path: '/api/login',
-      redirect: '/login'
-    }, {
-      path: '/api/logout',
-      redirect: '/logout'
+      path: '/events',
+      component: Events
     }
   ]
 })

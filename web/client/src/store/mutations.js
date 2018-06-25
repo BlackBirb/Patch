@@ -3,7 +3,7 @@ export function setUserData(state, payload) {
 }
 
 export function setLogged(state, value) {
-  state.logged = !!value
+  state.logged = Boolean(value)
 }
 
 export function setGuilds(state, payload) {
@@ -11,6 +11,7 @@ export function setGuilds(state, payload) {
 }
 
 export function setAccountData(state, payload) {
+  console.log("why")
   state.account = payload.account
   state.settings = payload.settings
 }

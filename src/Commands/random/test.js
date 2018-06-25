@@ -95,6 +95,21 @@ module.exports = class Test extends Command {
         }
 
         /**
+         * Object or array of inhibitors
+         * 
+         * Functions that will execute before command running gets the same parameters as 'run'
+         * returning false (Has to be boolean "false") will stop command from executing
+         * Everything that this inhibitor changes will be preserved
+         * 
+         * If using only one add prototype function 'inhibitor'
+         */
+        this.inhibitors = {
+            fixSomething: function(msg, params, utils) {
+                return true
+            }
+        }
+
+        /**
          * Function that returns object!
          * 
          * Each guild will have it's own version of object returned by this.data, you can acces it in any command function just like it would be in this object, so `this.data`

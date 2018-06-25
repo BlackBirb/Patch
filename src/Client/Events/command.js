@@ -18,7 +18,7 @@ module.exports = function(msg) { // fix this
 
     if(!cmd) {
         if(msg.channel.type === "text") {
-            let name = (`${msg.command} ${msg.params.join(" ")}`).toLowerCase()
+            let name = (msg.command + ( msg.params ? " "+msg.params.join(" ") : "")).toLowerCase()
             let tag = msg.guild.tag(name)
             if(tag === null) 
                 tag = msg.author.account.tags[name] || null //bug
