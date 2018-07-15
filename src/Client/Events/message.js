@@ -2,8 +2,10 @@ module.exports = function(msg) {
     if(msg.author.bot) return;
     if(msg.channel.type === "text" && !msg.channel.permissionsFor(this.user).has("SEND_MESSAGES")) return;
 
+    this.performance = Date.now()
+
     const cmd = msg.prepareCommand()
-    
+
     if(msg.type === "COMMAND") {
         // fuck async functions, way too slow even when load from cache
         const promises = [] // load all user data

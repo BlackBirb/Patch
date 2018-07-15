@@ -47,6 +47,10 @@ module.exports = class Ping extends Command {
     }
 
     async run(msg, p, { utils }) {
+
+        msg.channel.send(msg.mentions.users.size > 0 ? msg.mentions.users.first().toString() : "None")
+
+        return;
         const newMsg = await msg.channel.send(`Ping!`)
         const ping = {
             http: newMsg.createdTimestamp - msg.createdTimestamp,
