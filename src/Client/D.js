@@ -9,8 +9,7 @@ console.log(extend)
 
 module.exports = function() {
     for(const name of extend) {
-        const extender = require(path(name))
-        Discord.Structures.extend(name.slice(0,-3), extender)
+        require(path(name))(Discord)
     }
     
     console.ok("Discord module extended with:", extend.join(", "))
