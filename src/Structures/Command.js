@@ -16,10 +16,10 @@ module.exports = class Command {
 
     init() {
         if(typeof this.inhibitor === "function") 
-            this.allInhibitors.push(this.inhibitor)
+            this.allInhibitors.push(this.inhibitor.bind(this))
         if(typeof this.inhibitors === "object") {
             for(const key in this.inhibitors) { // works for arrays and objects
-                this.allInhibitors.push(this.inhibitors[key])
+                this.allInhibitors.push(this.inhibitors[key].bind(this))
             }
         }
     }

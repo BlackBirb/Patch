@@ -37,7 +37,7 @@ module.exports = class Bot extends Discord.Client {
         }
 
         if (config.run.discord) {
-            this.login(config.token)
+            this.login(config.tokenTest)
         } else
             this.emit("ready", "Fake ready event.")
 

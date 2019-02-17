@@ -21,10 +21,13 @@ const formatSec = sec =>
 
 const escapeRegex = text => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
+const cloneArray = arr => Array.from(arr,item => Array.isArray(item) ? cloneArray(item) : item);
+
 module.exports = {
     pathGetter,
     pickRandom,
     transformTag,
     formatSec,
-    escapeRegex
+    escapeRegex,
+    cloneArray
 }
